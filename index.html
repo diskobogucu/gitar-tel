@@ -1,0 +1,1711 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Akor Cebi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Düzen: iOS gruplu liste mantığı. Büyük başlık + sağ üstte dişli, yuvarlak köşeli gruplar,
+   altta bulanık "dock": üstte her ekranda duran mini metronom, altında 4 sekme. */
+:root{
+  --bg:#f2f2f7; --surface:#ffffff; --surface2:rgba(120,120,128,.12); --fill2:rgba(120,120,128,.16); --seg-on:#ffffff;
+  --ink:#000000; --muted:rgba(60,60,67,.6); --line:#c6c6c8;
+  --accent:#007aff; --accent-ink:#ffffff; --root:#ff9500; --root-ink:#000000; --green:#34c759;
+  --green-bg:rgba(52,199,89,.18); --green-ink:#248a3d; --red-bg:rgba(255,59,48,.16); --red-ink:#d70015;
+  --tip-bg:rgba(0,122,255,.1); --scrim:rgba(0,0,0,.32);
+  --bar:rgba(249,249,249,.88);
+  --head:#2c2c2e; --neck:#4a3426; --nut:#efe9dc; --metal:#b9bcc4; --metal-hi:#e6e8ec;
+  --wood1:#4a3326; --wood2:#2e1f17; --pearl:#efe9df; --fretw:#c9ccd2; --strc:#d9dbe0;
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro',system-ui,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#000000; --surface:#1c1c1e; --surface2:rgba(120,120,128,.24); --fill2:rgba(120,120,128,.36); --seg-on:#636366;
+    --ink:#ffffff; --muted:rgba(235,235,245,.6); --line:#38383a;
+    --accent:#0a84ff; --root:#ff9f0a; --green:#30d158; --green-bg:rgba(48,209,88,.2); --green-ink:#30d158;
+    --red-bg:rgba(255,69,58,.2); --red-ink:#ff453a; --tip-bg:rgba(10,132,255,.18); --scrim:rgba(0,0,0,.55);
+    --bar:rgba(29,29,30,.88);
+    --head:#3a3a3c; --neck:#3b2a1f; --nut:#d9d2c3; --metal:#8e9199; --metal-hi:#c7c9cf;
+    --wood1:#3d2a1f; --wood2:#241811; --pearl:#e4ddd1; --fretw:#a9acb3; --strc:#c4c6cc;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#1c1c1e; --surface2:rgba(120,120,128,.24); --fill2:rgba(120,120,128,.36); --seg-on:#636366;
+  --ink:#ffffff; --muted:rgba(235,235,245,.6); --line:#38383a;
+  --accent:#0a84ff; --root:#ff9f0a; --green:#30d158; --green-bg:rgba(48,209,88,.2); --green-ink:#30d158;
+  --red-bg:rgba(255,69,58,.2); --red-ink:#ff453a; --tip-bg:rgba(10,132,255,.18); --scrim:rgba(0,0,0,.55);
+  --bar:rgba(29,29,30,.88);
+  --head:#3a3a3c; --neck:#3b2a1f; --nut:#d9d2c3; --metal:#8e9199; --metal-hi:#c7c9cf;
+  --wood1:#3d2a1f; --wood2:#241811; --pearl:#e4ddd1; --fretw:#a9acb3; --strc:#c4c6cc;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background:var(--bg); color:var(--ink); font:17px/1.3 var(--font); letter-spacing:-.01em;
+  padding-block:8px 150px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  -webkit-text-size-adjust:100%;
+}
+button{font:inherit;letter-spacing:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent}
+button:focus-visible,textarea:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,textarea{font:inherit;color:var(--ink)}
+.app{max-width:600px;margin:0 auto}
+.view{display:flex;flex-direction:column;gap:12px;min-width:0}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 2px}
+.navr{display:flex;align-items:center;gap:4px}
+.lt{font:700 34px/1.12 var(--font);letter-spacing:.2px;margin:0;min-width:0;overflow-wrap:anywhere}
+.iconbtn{width:44px;height:44px;display:grid;place-items:center;color:var(--accent);border-radius:22px}
+.iconbtn svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sh{font:600 13px/1.2 var(--font);color:var(--muted);margin:10px 0 0 16px;letter-spacing:0}
+.foot{font-size:13px;line-height:1.4;color:var(--muted);margin:0 16px;letter-spacing:0}
+.tip{display:flex;align-items:center;gap:12px;background:var(--tip-bg);border-radius:12px;padding:10px 12px 10px 16px}
+.tip p{margin:0;flex:1;font-size:15px;line-height:1.35;min-width:0}
+.tip .link{flex:none;font-weight:600}
+
+.segc{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--fill2);border-radius:9px;padding:2px;gap:2px}
+.segc button{min-height:34px;border-radius:7px;font-size:14px;font-weight:600;padding:0 8px}
+.segc button[aria-pressed="true"]{background:var(--seg-on);box-shadow:0 1px 3px rgba(0,0,0,.22)}
+
+.group{background:var(--surface);border-radius:12px;overflow:hidden;min-width:0}
+.group.pad{padding:12px 14px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:6px 16px}
+.row+.row{border-top:.5px solid var(--line)}
+.row .lbl2{display:flex;flex-direction:column;min-width:0}
+.row .lbl2 small{color:var(--accent);font-size:13px;font-weight:600}
+.row .right{display:flex;align-items:center;gap:10px;color:var(--muted);flex:none}
+.row output,.row .val{color:var(--muted);font-variant-numeric:tabular-nums}
+.link{color:var(--accent);min-height:44px;font-size:17px}
+
+.pill{min-height:40px;min-width:0;padding:0 6px;border-radius:10px;background:var(--surface2);font-weight:600;font-size:16px}
+.pill[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.posrow{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px}
+
+.card{background:var(--surface);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.tight{padding:12px 8px}
+.card.tight>*:not(.dwrap){margin-inline:8px}
+.cname{font:700 clamp(46px,15vw,60px)/1 var(--font);letter-spacing:-.03em;overflow-wrap:anywhere}
+.csub{color:var(--muted);margin-top:4px;font-size:15px}
+.cnotes{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.note{padding:2px 9px;border-radius:7px;background:var(--surface2);font-size:14px;font-weight:600}
+.note.r{background:var(--root);color:var(--root-ink)}
+.hint{margin:0;text-align:center;color:var(--muted);font-size:13px}
+
+/* Kaydırmalı seçiciler */
+.rswipe{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:2px 4px;user-select:none;-webkit-user-select:none}
+.rswipe .nb{height:56px}
+.rc{grid-column:1/-1;text-align:center;min-width:0}
+.rc .cnotes{justify-content:center}
+.nb{height:44px;display:grid;place-items:center;color:var(--accent)}
+.nb:disabled{opacity:.3;cursor:default}
+.nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.car{--base:clamp(46px,15vw,60px);position:relative;height:calc(var(--base) + 6px);overflow:hidden;min-width:0;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.car.sm{--base:clamp(34px,11vw,42px)}
+.car.mini{--base:19px;height:40px;margin-top:2px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.car.mid{--base:24px;height:44px}
+.car.icons{height:58px}
+.car.icons .ci svg{height:52px;width:auto;display:block}
+.ico-head{fill:currentColor;opacity:.9}
+.ico-neck{fill:currentColor;opacity:.55}
+.ico-peg{fill:currentColor}
+.car.icons .ci[data-p="0"]{color:var(--accent)}
+.car.icons .ci{color:var(--ink)}
+.ci{position:absolute;left:50%;top:0;height:100%;display:flex;align-items:center;white-space:nowrap;font:700 var(--base)/1 var(--font);letter-spacing:-.03em;
+  transform:translateX(-50%) translateX(calc(var(--p)*30%)) scale(var(--sc));opacity:var(--op);will-change:transform,opacity}
+.car.mini .ci{font-size:var(--base);font-weight:600;letter-spacing:-.01em;padding:0 4px}
+.car.mini .ci[data-p="0"]{color:var(--accent)}
+.car.mid .ci{font-weight:700;letter-spacing:-.02em}
+.car.mid .ci[data-p="0"]{color:var(--ink)}
+.ci.l3{font-size:calc(var(--base)*.82)} .ci.l4{font-size:calc(var(--base)*.66)} .ci.l5{font-size:calc(var(--base)*.54)}
+@keyframes soft{from{opacity:.25}to{opacity:1}}
+@media (prefers-reduced-motion: no-preference){.soft{animation:soft .32s ease-out}}
+
+/* Son akorlar */
+.recent{display:flex;align-items:center;gap:10px;min-width:0}
+.recent .rl{color:var(--muted);font-size:13px;font-weight:600;flex:none;padding-left:4px}
+.rrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;min-width:0;padding:2px 0}
+.rrow::-webkit-scrollbar{display:none}
+.rrow .cchip{background:var(--surface);flex:none}
+
+/* Akor şeması */
+.dwrap,.dwrap svg{touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.dwrap{display:flex;justify-content:center}
+.dwrap svg{cursor:pointer;width:100%;max-width:290px;height:auto;display:block}
+.dwrap.wide svg{max-width:none}
+.d-str.buzz{stroke:var(--accent)}
+@keyframes buzz{0%{transform:translateX(-3px)}20%{transform:translateX(3px)}40%{transform:translateX(-2.2px)}60%{transform:translateX(1.6px)}80%{transform:translateX(-.8px)}100%{transform:translateX(0)}}
+@media (prefers-reduced-motion: no-preference){.d-str.buzz{animation:buzz .38s linear}}
+.d-fret{stroke:var(--line);stroke-width:1.3}
+.d-nut{stroke:var(--ink);stroke-width:6}
+.d-str{stroke:var(--muted)}
+.d-inlay{fill:var(--surface2)}
+.d-barre{fill:var(--accent)}
+.d-dot{fill:var(--accent)} .d-dot.r{fill:var(--root)}
+.d-num{fill:var(--accent-ink);font:700 15px var(--font);text-anchor:middle;dominant-baseline:central}
+.d-num.r{fill:var(--root-ink)}
+.d-open{fill:none;stroke:var(--muted);stroke-width:2.2} .d-open.r{stroke:var(--root);stroke-width:2.8}
+.d-x{stroke:var(--muted);stroke-width:2.4;stroke-linecap:round}
+.d-lab{fill:var(--muted);font:600 12px var(--font);text-anchor:middle}
+.d-pos{fill:var(--ink);font:700 15px var(--font);text-anchor:end}
+.vnav{display:grid;grid-template-columns:44px 1fr 44px;align-items:center}
+.vlab{text-align:center;display:flex;flex-direction:column;line-height:1.3;min-width:0}
+.vlab strong{font-size:15px;font-weight:600}
+.vlab span{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+
+/* Klavye */
+.fb-w1{stop-color:var(--wood1)} .fb-w2{stop-color:var(--wood2)}
+.fb-fret{stroke:var(--fretw)}
+.fb-nut{fill:var(--nut)}
+.fb-str{stroke:var(--strc)}
+.fb-inlay{fill:var(--pearl);opacity:.8}
+.fb-num{fill:var(--muted);font-weight:600;text-anchor:middle;font-family:var(--font)}
+.fb-lab{fill:var(--muted);font-weight:700;text-anchor:middle;dominant-baseline:central;font-family:var(--font)}
+.fb-hit{fill:transparent;cursor:pointer}
+.fb-dot{fill:var(--accent);stroke:var(--wood2);stroke-width:1.5} .fb-dot.r{fill:var(--root)} .fb-dot.b{fill:var(--pearl);stroke:var(--accent);stroke-width:2.5}
+.fb-t{fill:var(--accent-ink);font-weight:700;text-anchor:middle;dominant-baseline:central;pointer-events:none;font-family:var(--font)}
+.fb-t.r{fill:var(--root-ink)} .fb-t.b{fill:var(--accent)}
+.fb-faint{fill:var(--pearl);opacity:.28}
+.fd .fb-dot{transform-box:fill-box;transform-origin:center}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion: no-preference){.fd.hit .fb-dot{animation:pop .3s ease-out}}
+.fsbtn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:12px;background:var(--tip-bg);color:var(--accent);font-weight:600;font-size:16px}
+.fsbtn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Tam ekran klavye: dikey tutulursa içerik 90° döner, telefonu yana çevirince düz okunur. */
+#fs{position:fixed;inset:0;z-index:60;background:var(--bg);overflow:hidden}
+.fs-in{position:absolute;top:0;left:0;width:100vw;height:100vh;height:100dvh;display:flex;flex-direction:column;
+  padding:max(8px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px))}
+@media (orientation: portrait){
+  .fs-in{width:100vh;width:100dvh;height:100vw;transform-origin:top left;transform:translateX(100vw) rotate(90deg);padding:10px 14px}
+  .fs-in.flip{transform:translateY(100vh) rotate(-90deg)}
+}
+.fs-top{display:flex;align-items:center;gap:8px;min-height:48px;overflow-x:auto;scrollbar-width:none}
+.fs-top::-webkit-scrollbar{display:none}
+.fs-title{display:flex;align-items:center;gap:0;font-weight:700;font-size:17px;white-space:nowrap;flex:none}
+.fs-top .posrow{flex:none;display:flex;gap:6px}
+.fs-top .posrow .pill{min-width:36px;padding:0 8px}
+.fs-top .nb{width:32px}
+.fs-deg{min-height:36px;padding:0 12px;border-radius:10px;background:var(--surface2);font-weight:600;font-size:15px;flex:none}
+.fs-deg[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.fs-top .posrow .pill{min-height:36px;font-size:15px}
+.fs-top .segc{flex:none;min-width:170px}
+.fs-sp{flex:1}
+.fsx{width:40px;height:40px;border-radius:20px;background:var(--surface2);display:grid;place-items:center;flex:none}
+.fsx svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.fs-board{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.fs-board svg{width:100%;height:100%;display:block}
+
+/* Arka plan müziği */
+.bt-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bt-head>div{display:flex;flex-direction:column;min-width:0}
+.bt-head b{font-size:19px;font-weight:700}
+.bt-head span{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.btplay{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:22px;background:var(--green-bg);color:var(--green-ink);font-weight:700;font-size:16px;flex:none}
+.btplay.on{background:var(--red-bg);color:var(--red-ink)}
+.btchips{justify-content:center}
+.cap{display:block;text-align:center;color:var(--muted);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:-6px}
+.bchip{min-width:44px;padding:6px 10px;border-radius:9px;background:var(--surface2);font-weight:700;font-size:16px;text-align:center;transition:background .15s,color .15s}
+.bchip.now{background:var(--accent);color:var(--accent-ink)}
+.fs-now{min-width:64px;padding:6px 12px;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:18px;text-align:center;flex:none}
+.fs-now:empty{display:none}
+.fsx.play{background:var(--green-bg)} .fsx.play svg{stroke:none;fill:var(--green-ink)}
+.fsx.play.on{background:var(--red-bg)} .fsx.play.on svg{fill:var(--red-ink)}
+.playing .fd:not(.ct) .fb-dot,.playing .fd:not(.ct) .fb-t{opacity:.45}
+.fd.ct .fb-dot{stroke:var(--pearl);stroke-width:3}
+.orow .oh .mini-play{margin-left:auto}
+.mini-play{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:16px;background:var(--green-bg);color:var(--green-ink);font-weight:600;font-size:14px}
+
+/* Ton akorları */
+.krow{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:8px;padding:8px 16px}
+.krow+.krow{border-top:.5px solid var(--line)}
+.kn{color:var(--muted);font-weight:600;font-size:15px}
+.kchips{display:flex;gap:8px;flex-wrap:wrap}
+.cchip{min-height:40px;min-width:48px;padding:0 12px;border-radius:10px;background:var(--surface2);font-weight:700;font-size:18px}
+.cchip.alt{background:transparent;box-shadow:inset 0 0 0 1px var(--line);font-weight:600}
+.srow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.orow{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.orow+.orow{border-top:.5px solid var(--line)}
+.oh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.oh strong{font-weight:600}
+.oh span{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+
+.stepper{display:inline-flex;background:var(--fill2);border-radius:8px;overflow:hidden;flex:none}
+.stepper button{width:44px;height:32px;font-size:22px;font-weight:400;display:grid;place-items:center;color:var(--ink)}
+.stepper button+button{border-left:1px solid var(--line)}
+.empty{color:var(--muted);font-size:15px;margin:0}
+
+/* Akort aleti */
+.readout{text-align:center;min-height:108px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px}
+.rnote{font:700 68px/1 var(--font);letter-spacing:-.03em}
+.rnote sub{font-size:26px;color:var(--muted);font-weight:600;letter-spacing:0}
+.rhz{color:var(--muted);font-variant-numeric:tabular-nums;font-size:15px}
+.rhint{font:700 24px/1.2 var(--font)}
+.gwrap{display:flex;justify-content:center}
+.gwrap svg{width:100%;max-width:330px;height:auto;display:block;user-select:none;-webkit-user-select:none}
+.g-head{fill:var(--head)}
+.g-slot{fill:var(--bg)}
+.g-neck{fill:var(--neck)}
+.g-fret{stroke:var(--metal);stroke-width:2}
+.g-nut{fill:var(--nut)}
+.g-str{fill:none;stroke:var(--metal-hi);stroke-linecap:round;stroke-linejoin:round}
+.g-str.on{stroke:var(--accent)}
+@keyframes vib{0%{transform:translateX(-.7px)}50%{transform:translateX(.7px)}100%{transform:translateX(-.7px)}}
+@media (prefers-reduced-motion: no-preference){.g-str.on{animation:vib .07s linear infinite}}
+.g-shaft{stroke:var(--metal);stroke-width:4;stroke-linecap:round}
+.g-post{fill:var(--metal-hi);stroke:var(--metal);stroke-width:1.5}
+.peg{cursor:pointer}
+.peg .pk{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.peg .pt{fill:var(--ink);font-weight:700;text-anchor:middle;dominant-baseline:central;font-family:var(--font);pointer-events:none}
+.peg .po{fill:var(--muted);font-weight:600}
+.peg.on .pk{fill:var(--accent);stroke:var(--accent)}
+.peg.on .pt,.peg.on .po{fill:var(--accent-ink)}
+@keyframes ring{from{transform:scale(1);opacity:.75}to{transform:scale(1.45);opacity:0}}
+.peg .halo{fill:none;stroke:var(--accent);stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion: no-preference){.peg.on .halo{animation:ring 1.4s ease-out infinite}}
+.peg:focus-visible .pk{stroke:var(--accent);stroke-width:3}
+
+/* Metronom */
+.mcard{align-items:center;text-align:center;gap:12px}
+.bpmbig{display:flex;align-items:baseline;justify-content:center;gap:8px}
+.bpmbig output{font:700 84px/1 var(--font);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.bpmbig span{color:var(--muted);font-weight:600}
+.bdots{display:flex;gap:12px;justify-content:center;min-height:20px}
+.bdot{width:20px;height:20px;border-radius:50%;background:var(--fill2);display:block}
+.bdot.on{background:var(--accent)} .bdot.on.first{background:var(--root)}
+.mslider{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center;width:100%}
+.mslider input{width:100%;height:32px;accent-color:var(--accent);margin:0}
+.rnd{width:44px;height:44px;border-radius:50%;background:var(--surface2);font-size:24px;display:grid;place-items:center}
+.mcard .segc{width:100%}
+.pslots{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;width:100%}
+.ps{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border-radius:8px;font-variant-numeric:tabular-nums}
+.ps b{font-size:24px;line-height:1;height:26px;display:grid;place-items:center}
+.ps small{font-size:11px;color:var(--muted);font-weight:600}
+.ps.rest b{color:var(--muted);opacity:.5}
+.ps.on{background:var(--tip-bg)} .ps.on b{color:var(--accent)}
+.mbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.tapbtn,.gobtn{min-height:54px;border-radius:14px;font-weight:700;font-size:18px}
+.tapbtn{background:var(--surface)}
+.gobtn{background:var(--green-bg);color:var(--green-ink)}
+.gobtn.on{background:var(--red-bg);color:var(--red-ink)}
+.danger{min-height:50px;border-radius:12px;background:var(--surface);color:var(--red-ink);font-weight:600;width:100%}
+
+.toggle{width:51px;height:31px;border-radius:16px;background:var(--fill2);position:relative;flex:none;transition:background .2s}
+.toggle i{position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.28);transition:transform .2s}
+.toggle[aria-checked="true"]{background:var(--green)}
+.toggle[aria-checked="true"] i{transform:translateX(20px)}
+
+/* Şarkılar */
+.lrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-height:60px;padding:10px 16px}
+.lrow+.lrow{border-top:.5px solid var(--line)}
+.lrow .lt2{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.lrow .lt2 b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .lt2 small{color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2.4;flex:none}
+.navbar{display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.back{display:flex;align-items:center;gap:2px;color:var(--accent);min-height:44px;font-size:17px}
+.back svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.tin{width:100%;border:0;background:transparent;padding:14px 16px;font-size:20px;font-weight:600}
+textarea{display:block;width:100%;min-height:260px;resize:vertical;background:transparent;color:var(--ink);border:0;padding:12px 16px;font:16px/1.6 ui-monospace,'SF Mono',Menlo,monospace}
+.lyrics{display:flex;flex-direction:column;gap:4px;font-size:19px;line-height:1.35;min-width:0}
+.lline{white-space:pre-wrap;overflow-wrap:anywhere}
+.lgap{height:12px}
+.lseg{display:inline-flex;flex-direction:column;vertical-align:bottom;max-width:100%}
+.lseg .ch{font-weight:700;color:var(--accent);font-size:16px;min-height:22px;text-align:left;padding-right:6px;line-height:1.3}
+.lseg .ch.ph{pointer-events:none}
+.lseg .ch.plain{color:var(--muted)}
+.lseg .tx{white-space:pre-wrap;overflow-wrap:anywhere}
+.capotag{align-self:flex-start;font-size:13px;font-weight:600;color:var(--root-ink);background:var(--root);border-radius:6px;padding:2px 8px}
+.playbtn{width:36px;height:36px;border-radius:50%;background:var(--green-bg);color:var(--green-ink);display:grid;place-items:center;flex:none}
+.playbtn.on{background:var(--red-bg);color:var(--red-ink)}
+
+/* Alt dock: mini metronom + sekmeler */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bar);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom, 0px)}
+.mbar{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:10px;min-height:54px;
+  padding:4px max(16px, env(safe-area-inset-right, 0px)) 4px max(16px, env(safe-area-inset-left, 0px));border-bottom:.5px solid var(--line)}
+.mbar .mt{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;line-height:1.25;text-align:left;min-height:44px;justify-content:center}
+.mbar .mt b{font-weight:600;font-variant-numeric:tabular-nums}
+.mbar .mt span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mdot{width:10px;height:10px;border-radius:50%;background:var(--fill2);flex:none;display:block}
+.mdot.on{background:var(--accent)} .mdot.on.first{background:var(--root)}
+.tabbar{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);
+  padding:2px max(8px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px))}
+.tabbar button{min-height:49px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-size:10px;font-weight:500;letter-spacing:.1px}
+.tabbar button svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-selected="true"]{color:var(--accent)}
+
+/* Alt sayfa */
+.sheet-wrap{position:fixed;inset:0;z-index:40}
+.sheet-bg{position:absolute;inset:0;background:var(--scrim);opacity:0;transition:opacity .3s}
+.sheet{position:absolute;left:0;right:0;bottom:0;margin-inline:auto;max-width:600px;max-height:90%;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--bg);border-radius:14px 14px 0 0;display:flex;flex-direction:column;gap:12px;
+  padding:6px max(16px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  transform:translateY(100%);transition:transform .34s cubic-bezier(.2,.8,.2,1)}
+.sheet-wrap.open .sheet{transform:none}
+.sheet-wrap.open .sheet-bg{opacity:1}
+.grab{width:36px;height:5px;border-radius:3px;background:var(--fill2);margin:2px auto 0;flex:none}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sheet-head h2{font:700 20px/1.2 var(--font);margin:0}
+.sheet-head .link{font-weight:600}
+.ctext{font-size:17px;line-height:1.4;margin:4px 4px 8px}
+
+@media (prefers-reduced-motion: reduce){.toggle,.toggle i,.sheet,.sheet-bg{transition:none}}
+@media (prefers-reduced-motion: no-preference){.pill:active,.cchip:active,.peg:active,.lrow:active,.fsbtn:active{opacity:.7}}
+</style>
+
+<div class="app"><main>
+  <section id="tab-akort" class="view">
+    <header class="nav"><h1 class="lt">Akort</h1><button class="iconbtn" data-act="settings" aria-label="Ayarlar"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.2"/><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3M4.8 4.8l2.1 2.1M17.1 17.1l2.1 2.1M4.8 19.2l2.1-2.1M17.1 6.9l2.1-2.1"/></svg></button></header>
+    <div id="tip-akort"></div>
+    <article id="tuner" class="card"></article>
+    <div class="group"><div class="row">
+      <span>Referans A4</span>
+      <span class="right">
+        <output id="a4v">440 Hz</output>
+        <span class="stepper">
+          <button data-act="a4" data-v="-1" aria-label="A4 değerini azalt">−</button>
+          <button data-act="a4" data-v="1" aria-label="A4 değerini artır">+</button>
+        </span>
+      </span>
+    </div></div>
+    <p class="foot" id="tunerfoot"></p>
+  </section>
+
+  <section id="tab-akorlar" class="view" hidden>
+    <header class="nav"><h1 class="lt">Akorlar</h1><button class="iconbtn" data-act="settings" aria-label="Ayarlar"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.2"/><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3M4.8 4.8l2.1 2.1M17.1 17.1l2.1 2.1M4.8 19.2l2.1-2.1M17.1 6.9l2.1-2.1"/></svg></button></header>
+    <div id="tip-akorlar"></div>
+    <div id="recent"></div>
+    <article id="card" class="card"></article>
+  </section>
+
+  <section id="tab-ton" class="view" hidden>
+    <header class="nav"><h1 class="lt">Ton</h1><button class="iconbtn" data-act="settings" aria-label="Ayarlar"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.2"/><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3M4.8 4.8l2.1 2.1M17.1 17.1l2.1 2.1M4.8 19.2l2.1-2.1M17.1 6.9l2.1-2.1"/></svg></button></header>
+    <div id="tip-ton"></div>
+    <article id="tcard" class="card"></article>
+    <article id="btcard" class="card"></article>
+    <article id="bcard" class="card tight"></article>
+    <div id="tchords" class="view"></div>
+    <div id="tprog" class="view"></div>
+  </section>
+
+  <section id="tab-sarki" class="view" hidden></section>
+</main></div>
+
+<div class="dock">
+  <div class="mbar">
+    <button class="playbtn" id="mmBtn" data-act="metro" aria-label="Metronomu başlat"></button>
+    <button class="mt" data-act="metroopen" aria-label="Metronom ayarları"><b id="mmBpm"></b><span id="mmSub"></span></button>
+    <i class="mdot" id="mdot"></i>
+    <span class="stepper">
+      <button data-act="bpm" data-v="-5" aria-label="5 BPM yavaşlat">−</button>
+      <button data-act="bpm" data-v="5" aria-label="5 BPM hızlandır">+</button>
+    </span>
+  </div>
+  <nav class="tabbar" aria-label="Bölümler" role="tablist">
+    <button role="tab" data-act="tab" data-v="akort" aria-selected="true">
+      <svg viewBox="0 0 24 24"><path d="M8.5 2.5v8a3.5 3.5 0 0 0 7 0v-8"/><path d="M12 14v7.5"/></svg>
+      Akort
+    </button>
+    <button role="tab" data-act="tab" data-v="akorlar" aria-selected="false">
+      <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M5 9h14M5 15h14M10 3v18M15 3v18" opacity=".55"/><circle cx="12.5" cy="12" r="1.7" fill="currentColor" stroke="none"/></svg>
+      Akorlar
+    </button>
+    <button role="tab" data-act="tab" data-v="ton" aria-selected="false">
+      <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="1.5"/><path d="M8 6v12M14 6v12M2 10h20M2 14h20" opacity=".5"/><circle cx="11" cy="10" r="1.7" fill="currentColor" stroke="none"/><circle cx="17" cy="14" r="1.7" fill="currentColor" stroke="none"/></svg>
+      Ton
+    </button>
+    <button role="tab" data-act="tab" data-v="sarki" aria-selected="false">
+      <svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
+      Şarkılar
+    </button>
+  </nav>
+</div>
+
+<div id="sheet" class="sheet-wrap" hidden>
+  <div class="sheet-bg" data-act="closesheet"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="grab"></div>
+    <div class="sheet-head"><h2 id="sheetTitle"></h2><button class="link" data-act="closesheet">Bitti</button></div>
+    <div id="sheetBody" class="view"></div>
+  </div>
+</div>
+
+<div id="fs" hidden><div class="fs-in" id="fsIn"></div></div>
+
+<script>
+/* ---------- Müzik mantığı ---------- */
+const NAMES={
+  ls:['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'],
+  lf:['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],
+  ss:['Do','Do♯','Re','Re♯','Mi','Fa','Fa♯','Sol','Sol♯','La','La♯','Si'],
+  sf:['Do','Re♭','Re','Mi♭','Mi','Fa','Sol♭','Sol','La♭','La','Si♭','Si']
+};
+const state={
+  tab:'akort',sheet:null,fs:false,fsFlip:false,
+  solfege:false,flat:false,lefty:false,awake:true,tips:{},
+  root:9,q:'m',vi:0,recent:[],sc:null,
+  sRoot:9,sType:'pentm',sPos:0,sLab:'note',
+  inst:'k33',tunI:0,a4:440,toneI:-1,
+  bpm:100,sig:'4',pat:0,patChord:true,btProg:0,btStyle:0,
+  songs:[],songId:null,editing:false,auto:false,autoSp:2
+};
+const nm=pc=>NAMES[(state.solfege?'s':'l')+(state.flat?'f':'s')][((pc%12)+12)%12];
+const mod=(n,m)=>((n%m)+m)%m;
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+
+const OPEN=[4,9,2,7,11,4];          // 6. telden 1. tele: Mi La Re Sol Si Mi
+const MIDI=[40,45,50,55,59,64];
+const QT=[
+  {k:'',    lab:'Majör', ln:'Majör',       tr:'majör',       sym:'',     iv:[0,4,7]},
+  {k:'m',   lab:'Minör', ln:'Minör',       tr:'minör',       sym:'m',    iv:[0,3,7]},
+  {k:'7',   lab:'7',     ln:'Dominant 7',  tr:'dominant 7',  sym:'7',    iv:[0,4,7,10]},
+  {k:'maj7',lab:'maj7',  ln:'Majör 7',     tr:'majör 7',     sym:'maj7', iv:[0,4,7,11]},
+  {k:'m7',  lab:'m7',    ln:'Minör 7',     tr:'minör 7',     sym:'m7',   iv:[0,3,7,10]},
+  {k:'sus2',lab:'sus2',  ln:'Sus2',        tr:'sus2',        sym:'sus2', iv:[0,2,7]},
+  {k:'sus4',lab:'sus4',  ln:'Sus4',        tr:'sus4',        sym:'sus4', iv:[0,5,7]},
+  {k:'dim', lab:'dim',   ln:'Azaltılmış',  tr:'azaltılmış',  sym:'dim',  iv:[0,3,6]},
+  {k:'aug', lab:'aug',   ln:'Artırılmış',  tr:'artırılmış',  sym:'aug',  iv:[0,4,8]},
+  {k:'6',   lab:'6',     ln:'Majör 6',     tr:'majör 6',     sym:'6',    iv:[0,4,7,9]},
+  {k:'5',   lab:'5',     ln:'Power chord', tr:'power chord', sym:'5',    iv:[0,7]}
+];
+const QBY=Object.fromEntries(QT.map(q=>[q.k,q]));
+
+/* Taşınabilir şekiller: rel = köke göre perde (-1 = çalınmaz), f = parmak, rs = kök teli (0 = 6. tel) */
+const SH={
+  '':[{rs:0,rel:[0,2,2,1,0,0],f:[1,3,4,2,1,1]},{rs:1,rel:[-1,0,2,2,2,0],f:[0,1,3,3,3,1]}],
+  'm':[{rs:0,rel:[0,2,2,0,0,0],f:[1,3,4,1,1,1]},{rs:1,rel:[-1,0,2,2,1,0],f:[0,1,3,4,2,1]}],
+  '7':[{rs:0,rel:[0,2,0,1,0,0],f:[1,3,1,2,1,1]},{rs:1,rel:[-1,0,2,0,2,0],f:[0,1,3,1,4,1]}],
+  'maj7':[{rs:0,rel:[0,2,1,1,0,0],f:[1,4,2,3,1,1]},{rs:1,rel:[-1,0,2,1,2,0],f:[0,1,3,2,4,1]}],
+  'm7':[{rs:0,rel:[0,2,0,0,0,0],f:[1,3,1,1,1,1]},{rs:1,rel:[-1,0,2,0,1,0],f:[0,1,3,1,2,1]}],
+  'sus2':[{rs:1,rel:[-1,0,2,2,0,0],f:[0,1,3,4,1,1]}],
+  'sus4':[{rs:0,rel:[0,2,2,2,0,0],f:[1,2,3,4,1,1]},{rs:1,rel:[-1,0,2,2,3,0],f:[0,1,2,3,4,1]}],
+  'dim':[{rs:1,rel:[-1,0,1,2,1,-1],f:[0,1,2,4,3,0]}],
+  'aug':[{rs:2,rel:[-1,-1,0,3,3,2],f:[0,0,1,4,4,2]}],
+  '6':[{rs:0,rel:[0,2,2,1,2,0],f:[1,3,4,2,4,1]},{rs:1,rel:[-1,0,2,2,2,2],f:[0,1,3,3,3,3]}],
+  '5':[{rs:0,rel:[0,2,2,-1,-1,-1],f:[1,3,4,0,0,0]},{rs:1,rel:[-1,0,2,2,-1,-1],f:[0,1,3,4,0,0]}]
+};
+/* Açık pozisyon akorları: r = kök (0 = Do), mutlak perde ve parmak numaraları */
+const OPENV=[
+  {r:0,q:'',f:[-1,3,2,0,1,0],g:[0,3,2,0,1,0]},
+  {r:9,q:'',f:[-1,0,2,2,2,0],g:[0,0,1,2,3,0]},
+  {r:7,q:'',f:[3,2,0,0,0,3],g:[2,1,0,0,0,3]},
+  {r:7,q:'',f:[3,2,0,0,3,3],g:[2,1,0,0,3,4]},
+  {r:4,q:'',f:[0,2,2,1,0,0],g:[0,2,3,1,0,0]},
+  {r:2,q:'',f:[-1,-1,0,2,3,2],g:[0,0,0,1,3,2]},
+  {r:9,q:'m',f:[-1,0,2,2,1,0],g:[0,0,2,3,1,0]},
+  {r:4,q:'m',f:[0,2,2,0,0,0],g:[0,2,3,0,0,0]},
+  {r:2,q:'m',f:[-1,-1,0,2,3,1],g:[0,0,0,2,3,1]},
+  {r:9,q:'7',f:[-1,0,2,0,2,0],g:[0,0,2,0,3,0]},
+  {r:4,q:'7',f:[0,2,0,1,0,0],g:[0,2,0,1,0,0]},
+  {r:2,q:'7',f:[-1,-1,0,2,1,2],g:[0,0,0,2,1,3]},
+  {r:7,q:'7',f:[3,2,0,0,0,1],g:[3,2,0,0,0,1]},
+  {r:0,q:'7',f:[-1,3,2,3,1,0],g:[0,3,2,4,1,0]},
+  {r:11,q:'7',f:[-1,2,1,2,0,2],g:[0,2,1,3,0,4]},
+  {r:0,q:'maj7',f:[-1,3,2,0,0,0],g:[0,3,2,0,0,0]},
+  {r:5,q:'maj7',f:[-1,-1,3,2,1,0],g:[0,0,4,3,2,0]},
+  {r:9,q:'maj7',f:[-1,0,2,1,2,0],g:[0,0,2,1,3,0]},
+  {r:2,q:'maj7',f:[-1,-1,0,2,2,2],g:[0,0,0,1,1,1]},
+  {r:7,q:'maj7',f:[3,2,0,0,0,2],g:[3,2,0,0,0,1]},
+  {r:4,q:'m7',f:[0,2,0,0,0,0],g:[0,2,0,0,0,0]},
+  {r:4,q:'m7',f:[0,2,2,0,3,0],g:[0,1,2,0,3,0]},
+  {r:9,q:'m7',f:[-1,0,2,0,1,0],g:[0,0,2,0,1,0]},
+  {r:2,q:'m7',f:[-1,-1,0,2,1,1],g:[0,0,0,2,1,1]},
+  {r:9,q:'sus2',f:[-1,0,2,2,0,0],g:[0,0,1,2,0,0]},
+  {r:2,q:'sus2',f:[-1,-1,0,2,3,0],g:[0,0,0,2,3,0]},
+  {r:9,q:'sus4',f:[-1,0,2,2,3,0],g:[0,0,1,2,3,0]},
+  {r:2,q:'sus4',f:[-1,-1,0,2,3,3],g:[0,0,0,1,3,4]},
+  {r:4,q:'sus4',f:[0,2,2,2,0,0],g:[0,2,3,4,0,0]}
+];
+const OPENKEYS=new Set(OPENV.map(o=>o.r+'|'+o.q));
+
+function voicings(root,q){
+  const out=[],seen=new Set();
+  const add=v=>{const k=v.frets.join(',');if(!seen.has(k)){seen.add(k);out.push(v);}};
+  const opens=OPENV.filter(o=>o.r===root&&o.q===q);
+  opens.forEach(o=>add({frets:o.f,fingers:o.g,label:'Açık pozisyon',pos:0}));
+  const mv=[];
+  (SH[q]||[]).forEach(sh=>{
+    const p0=mod(root-OPEN[sh.rs],12);
+    const cands=p0===0?(opens.length?[12]:[0,12]):[p0];
+    cands.forEach(p=>{
+      const frets=sh.rel.map(r=>r<0?-1:r+p);
+      if(Math.max(...frets)>15) return;
+      mv.push({frets,fingers:sh.f,pos:p,label:(p===0?'Açık pozisyon':p+'. perde')+' · kök '+(6-sh.rs)+'. telde'});
+    });
+  });
+  mv.sort((a,b)=>a.pos-b.pos).forEach(add);
+  return out;
+}
+function shapeLabels(vs){
+  const base=vs.map(v=>v.pos===0?'Açık':v.pos+'. perde'), seen={};
+  return base.map(b=>{seen[b]=(seen[b]||0)+1;return seen[b]>1?b+' ('+seen[b]+')':b;});
+}
+
+const NOTE_RE='(Do|Re|Mi|Fa|Sol|La|Si|[A-G])([#b♯♭]?)';
+const CHORD_RE=new RegExp('^'+NOTE_RE+'(.*?)(?:/'+NOTE_RE+')?$');
+const BASE={Do:0,Re:2,Mi:4,Fa:5,Sol:7,La:9,Si:11,C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const QMAP={'':'','maj':'','M':'','m':'m','min':'m','-':'m','7':'7','dom7':'7','maj7':'maj7','M7':'maj7','Δ':'maj7','Δ7':'maj7','m7':'m7','min7':'m7','-7':'m7','sus2':'sus2','sus4':'sus4','sus':'sus4','dim':'dim','°':'dim','aug':'aug','+':'aug','6':'6','5':'5'};
+const LC=['maj7','maj','min','min7','dim','aug','sus2','sus4','sus'];
+function pcOf(n,acc){let p=BASE[n];if(acc==='#'||acc==='♯')p++;else if(acc==='b'||acc==='♭')p--;return mod(p,12);}
+function parseTok(t){
+  if(t.length>12) return null;
+  const m=CHORD_RE.exec(t); if(!m) return null;
+  const raw=m[3];
+  let q,known=true;
+  if(raw in QMAP) q=QMAP[raw];
+  else if(LC.includes(raw.toLowerCase())) q=QMAP[raw.toLowerCase()];
+  else{
+    if(!/^(m|M|maj|min|add|sus|dim|aug|\+|-|°|Δ|\d|\()/.test(raw)) return null;
+    if(!/^[A-Za-z0-9+\-°Δ#♯♭()]*$/.test(raw)) return null;
+    known=false;
+    q=/^m(?!aj)/.test(raw)?'m':(/^(7|9|11|13)/.test(raw)?'7':'');
+  }
+  return {r:pcOf(m[1],m[2]),q,known,suf:known?QBY[q].sym:raw,b:m[4]?pcOf(m[4],m[5]):null};
+}
+
+/* ----- Gamlar ve ton ----- */
+const SCALES=[
+  {k:'pentm',n:'Pentatonik minör',sn:'Penta minör',iv:[0,3,5,7,10],deg:['1','♭3','4','5','♭7'],parent:'minor'},
+  {k:'pentM',n:'Pentatonik majör',sn:'Penta majör',iv:[0,2,4,7,9],deg:['1','2','3','5','6'],parent:'major'},
+  {k:'blues',n:'Blues',sn:'Blues',iv:[0,3,5,6,7,10],deg:['1','♭3','4','♭5','5','♭7'],parent:'minor',blue:6,base:[0,3,5,7,10]},
+  {k:'major',n:'Majör',sn:'Majör',iv:[0,2,4,5,7,9,11],deg:['1','2','3','4','5','6','7'],parent:'major'},
+  {k:'minor',n:'Doğal minör',sn:'Minör',iv:[0,2,3,5,7,8,10],deg:['1','2','♭3','4','5','♭6','♭7'],parent:'minor'},
+  {k:'dorian',n:'Dorian',sn:'Dorian',iv:[0,2,3,5,7,9,10],deg:['1','2','♭3','4','5','6','♭7'],parent:'dorian'},
+  {k:'mixo',n:'Mixolydian',sn:'Mixolydian',iv:[0,2,4,5,7,9,10],deg:['1','2','3','4','5','6','♭7'],parent:'mixo'},
+  {k:'harm',n:'Harmonik minör',sn:'Harm. minör',iv:[0,2,3,5,7,8,11],deg:['1','2','♭3','4','5','♭6','7'],parent:'harm'}
+];
+const SBY=Object.fromEntries(SCALES.map(s=>[s.k,s]));
+const scaleSet=(root,sc)=>new Set(sc.iv.map(i=>(root+i)%12));
+/* Pozisyon = 5 perdelik pencere; gamın bir notasının 6. teldeki perdesinden bir perde önce başlar. */
+function positions(root,sc){
+  const set=scaleSet(root,sc);
+  const base=new Set((sc.base||sc.iv).map(i=>(root+i)%12));
+  const starts=[...new Set([...base].map(pc=>mod(pc-OPEN[0],12)))].sort((a,b)=>a-b);
+  return starts.map(f6=>{
+    const lo=Math.max(0,f6-1),hi=lo+4,cells=[];
+    for(let s=0;s<6;s++)for(let f=lo;f<=hi;f++)if(set.has((OPEN[s]+f)%12)) cells.push([s,f]);
+    const fs=cells.map(c=>c[1]);
+    return {f6,cells,lo:Math.min(...fs),hi:Math.max(...fs)};
+  });
+}
+/* 7 sesli bir gamın üzerine üçlü ve dörtlü akorlar kurar. */
+const TRI={'4,7':'','3,7':'m','3,6':'dim','4,8':'aug'};
+const SEV={'4,7,11':'maj7','4,7,10':'7','3,7,10':'m7'};
+const ROMAN=['I','II','III','IV','V','VI','VII'];
+function diatonic(root,sc){
+  const iv=sc.iv, at=k=>iv[k%7]+(k>=7?12:0);
+  return iv.map((a,d)=>{
+    const t1=at(d+2)-a,t2=at(d+4)-a,t3=at(d+6)-a;
+    const q=TRI[t1+','+t2]; const q7=SEV[t1+','+t2+','+t3]||null;
+    let n=ROMAN[d]; if(q==='m'||q==='dim') n=n.toLowerCase(); if(q==='dim') n+='°'; if(q==='aug') n+='+';
+    return {n,r:(root+a)%12,q:q===undefined?'':q,q7};
+  });
+}
+const PROGS={
+  major:[
+    {n:'Pop',d:'I V vi IV',c:[[0,''],[7,''],[9,'m'],[5,'']]},
+    {n:'50\'ler',d:'I vi IV V',c:[[0,''],[9,'m'],[5,''],[7,'']]},
+    {n:'Rock',d:'I IV V',c:[[0,''],[5,''],[7,'']]},
+    {n:'Caz',d:'ii V I',c:[[2,'m7'],[7,'7'],[0,'maj7']]},
+    {n:'12 ölçü blues',d:'I I I I IV IV I I V IV I V',c:[[0,'7'],[0,'7'],[0,'7'],[0,'7'],[5,'7'],[5,'7'],[0,'7'],[0,'7'],[7,'7'],[5,'7'],[0,'7'],[7,'7']]}
+  ],
+  minor:[
+    {n:'Pop',d:'i VI III VII',c:[[0,'m'],[8,''],[3,''],[10,'']]},
+    {n:'Rock',d:'i VII VI VII',c:[[0,'m'],[10,''],[8,''],[10,'']]},
+    {n:'Klasik',d:'i iv v',c:[[0,'m'],[5,'m'],[7,'m']]},
+    {n:'Andalus',d:'i VII VI V',c:[[0,'m'],[10,''],[8,''],[7,'']]},
+    {n:'Balad',d:'i iv VII III',c:[[0,'m'],[5,'m'],[10,''],[3,'']]}
+  ]
+};
+PROGS.dorian=[{n:'Dorian vamp',d:'i IV',c:[[0,'m7'],[5,'']]},{n:'Dorian rock',d:'i IV i VII',c:[[0,'m'],[5,''],[0,'m'],[10,'']]}];
+PROGS.mixo=[{n:'Mixolydian vamp',d:'I VII IV I',c:[[0,''],[10,''],[5,''],[0,'']]},{n:'Funk',d:'I7 IV',c:[[0,'7'],[5,'']]}];
+PROGS.harm=[{n:'Harmonik',d:'i iv V i',c:[[0,'m'],[5,'m'],[7,'7'],[0,'m']]},{n:'Flamenko',d:'i VII VI V',c:[[0,'m'],[10,''],[8,''],[7,'7']]}];
+const progChords=(root,key)=>(PROGS[key]||[]).map(p=>({n:p.n,d:p.d,c:p.c.map(([o,q])=>({r:mod(root+o,12),q}))}));
+
+/* ----- Akort ----- */
+const T6=[
+  {n:'Standart',m:[40,45,50,55,59,64]},
+  {n:'Drop D',m:[38,45,50,55,59,64]},
+  {n:'Yarım ton aşağı',m:[39,44,49,54,58,63]},
+  {n:'Tam ton aşağı',m:[38,43,48,53,57,62]},
+  {n:'DADGAD',m:[38,45,50,55,57,62]},
+  {n:'Open G',m:[38,43,50,55,59,62]},
+  {n:'Open D',m:[38,45,50,54,57,62]}
+];
+/* Teller kalından inceye. 12 tellide her çift (oktav/eş tel, kalın tel) yan yanadır. */
+const INST=[
+  {k:'k33',n:'3 + 3 burgu',d:'6 tel · Gibson tarzı kafa',shape:'2col',L:[0,1,2],R:[5,4,3],nc:6,tun:T6},
+  {k:'k6',n:'Tek sıra burgu',d:'6 tel · Fender tarzı kafa',shape:'inline',L:[5,4,3,2,1,0],R:[],nc:6,tun:T6},
+  {k:'12',n:'12 telli',d:'6 çift tel · 6+6 burgu',shape:'2col',pairs:true,L:[0,1,2,3,4,5],R:[11,10,9,8,7,6],nc:6,tun:[
+    {n:'Standart',m:[52,40,57,45,62,50,67,55,59,59,64,64]},
+    {n:'Yarım ton aşağı',m:[51,39,56,44,61,49,66,54,58,58,63,63]}
+  ]},
+  {k:'7',n:'7 telli',d:'7 tel · tek sıra burgu',shape:'inline',L:[6,5,4,3,2,1,0],R:[],nc:7,tun:[
+    {n:'Standart',m:[35,40,45,50,55,59,64]},
+    {n:'Drop A',m:[33,40,45,50,55,59,64]}
+  ]},
+  {k:'bas4',n:'Bas (4)',d:'4 telli bas · tek sıra burgu',shape:'inline',bass:true,L:[3,2,1,0],R:[],nc:4,tun:[
+    {n:'Standart',m:[28,33,38,43]},
+    {n:'Drop D',m:[26,33,38,43]},
+    {n:'Yarım ton aşağı',m:[27,32,37,42]}
+  ]},
+  {k:'bas5',n:'Bas (5)',d:'5 telli bas · tek sıra burgu',shape:'inline',bass:true,L:[4,3,2,1,0],R:[],nc:5,tun:[
+    {n:'Standart',m:[23,28,33,38,43]},
+    {n:'Yarım ton aşağı',m:[22,27,32,37,42]}
+  ]},
+  {k:'uke',n:'Ukulele',d:'4 naylon tel · 2+2 burgu',shape:'2col',L:[0,1],R:[3,2],nc:4,tun:[
+    {n:'Standart',m:[67,60,64,69]},
+    {n:'Kalın G',m:[55,60,64,69]},
+    {n:'Bariton',m:[50,55,59,64]}
+  ]}
+];
+const midiHz=(m,a4)=>a4*Math.pow(2,(m-69)/12);
+
+/* ----- Metronom ve ritim ----- */
+const SIGS={
+  '2':{n:'2/4',acc:[2,1],spb:2},
+  '3':{n:'3/4',acc:[2,1,1],spb:2},
+  '4':{n:'4/4',acc:[2,1,1,1],spb:2},
+  '6':{n:'6/8',acc:[2,1,1,1.5,1,1],spb:1}
+};
+/* D = aşağı vuruş, U = yukarı vuruş, _ = boş. 2/4, 3/4, 4/4'te her vuruş iki sekizliğe bölünür. */
+const PATS={
+  '4':[{n:'Sadece tık',p:''},{n:'Dörtlük',p:'D_D_D_D_'},{n:'Sekizlik',p:'DUDUDUDU'},{n:'Pop',p:'D_DU_UDU'},{n:'Balad',p:'D_D_DUDU'}],
+  '3':[{n:'Sadece tık',p:''},{n:'Vals',p:'D_DUDU'}],
+  '2':[{n:'Sadece tık',p:''},{n:'Marş',p:'D_DU'}],
+  '6':[{n:'Sadece tık',p:''},{n:'Altılık',p:'D_UD_U'}]
+};
+/* Arka plan tarzları: 8 sekizlik dilim = 1 ölçü (4/4).
+   K/S/H davul (x = vur), B bas (köke göre yarım ton, null = sus), G gitar (D aşağı, U yukarı, S kısa vuruş), arp = arpej sırası. */
+const STYLES=[
+  {k:'pop',n:'Pop',K:'x___x___',S:'__x___x_',H:'xxxxxxxx',B:[0,null,null,0,0,null,7,null],G:'D_DU_UDU'},
+  {k:'rock',n:'Rock',K:'x___xx__',S:'__x___x_',H:'xxxxxxxx',B:[0,0,0,0,0,0,0,0],G:'DDDDDDDD',power:true},
+  {k:'balad',n:'Balad',K:'x_____x_',S:'____x___',H:'x_x_x_x_',B:[0,null,null,null,7,null,null,null],arp:[0,2,3,4,5,4,3,2]},
+  {k:'shuffle',n:'Blues shuffle',swing:true,K:'x___x___',S:'__x___x_',H:'xxxxxxxx',B:[0,0,4,4,7,7,9,9],G:'__S___S_'}
+];
+function tempoName(b){return b<60?'Largo':b<76?'Adagio':b<108?'Andante':b<120?'Moderato':b<168?'Allegro':'Presto';}
+</script>
+<script>
+/* ---------- Arayüz ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const TABS=['akort','akorlar','ton','sarki'];
+const CHEV_L='<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>';
+const CHEV_R='<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>';
+const GEAR='<button class="iconbtn" data-act="settings" aria-label="Ayarlar"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.2"/><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3M4.8 4.8l2.1 2.1M17.1 17.1l2.1 2.1M4.8 19.2l2.1-2.1M17.1 6.9l2.1-2.1"/></svg></button>';
+const ICON_PLAY='<svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M3 1.5l9 5.5-9 5.5z" fill="currentColor"/></svg>';
+const ICON_STOP='<svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x="2.5" y="2.5" width="9" height="9" rx="1.5" fill="currentColor"/></svg>';
+const ICON_ROT='<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="10" rx="2"/><path d="M7 4.5h6a4 4 0 0 1 4 3.5"/><path d="M15.5 6.5l1.6 1.6 1.6-1.6"/></svg>';
+
+const SAMPLE_SONG={id:'ornek',title:'Örnek: Yaz Akşamı',tr:0,capo:0,bpm:84,text:
+'[Am]Akşam iner [F]sahile yavaş\n[C]Dalgalar söy[G]ler eski bir şarkı\n[Am]Sen gelirsin [F]rüzgârla beraber\n[E7]Ben beklerim [Am]aynı yerde\n\nNakarat\nF G C Am\nF G E7 Am'};
+
+/* ---------- Kayıt ---------- */
+function save(){
+  try{localStorage.setItem('akorcebi',JSON.stringify({
+    v:2,tab:state.tab,solfege:state.solfege,flat:state.flat,lefty:state.lefty,awake:state.awake,tips:state.tips,
+    root:state.root,q:state.q,recent:state.recent,sRoot:state.sRoot,sType:state.sType,sLab:state.sLab,
+    inst:state.inst,tunI:state.tunI,a4:state.a4,bpm:state.bpm,sig:state.sig,pat:state.pat,patChord:state.patChord,btProg:state.btProg,btStyle:state.btStyle,
+    songs:state.songs,autoSp:state.autoSp
+  }));}catch(e){}
+}
+function load(){
+  let d=null;
+  try{d=JSON.parse(localStorage.getItem('akorcebi')||'null');}catch(e){}
+  state.songs=[{...SAMPLE_SONG}];
+  if(!d||typeof d!=='object') return;
+  const int=(v,a,b)=>Number.isInteger(v)&&v>=a&&v<=b, str=(v,n)=>typeof v==='string'&&v.length<=n;
+  if(TABS.includes(d.tab)) state.tab=d.tab;
+  state.solfege=!!d.solfege; state.flat=!!d.flat; state.lefty=!!d.lefty; if(typeof d.awake==='boolean') state.awake=d.awake;
+  if(d.tips&&typeof d.tips==='object') for(const k of ['akort','akorlar','ton','sarki']) if(d.tips[k]===true) state.tips[k]=true;
+  if(int(d.root,0,11)) state.root=d.root;
+  if(typeof d.q==='string'&&d.q in QBY) state.q=d.q;
+  if(Array.isArray(d.recent)) state.recent=d.recent.filter(x=>typeof x==='string'&&/^\d{1,2}\|[a-z0-9]*$/.test(x)&&+x.split('|')[0]<12&&x.split('|')[1] in QBY).slice(0,8);
+  if(int(d.sRoot,0,11)) state.sRoot=d.sRoot;
+  if(typeof d.sType==='string'&&d.sType in SBY) state.sType=d.sType;
+  if(d.sLab==='note'||d.sLab==='deg') state.sLab=d.sLab;
+  const oldInst={akustik:'k33',klasik:'k33',elektrik:'k6'};
+  if(typeof d.inst==='string'&&d.inst in oldInst) state.inst=oldInst[d.inst];
+  else if(typeof d.inst==='string'&&INST.some(x=>x.k===d.inst)) state.inst=d.inst;
+  if(int(d.tunI,0,9)) state.tunI=d.tunI;
+  if(int(d.a4,430,450)) state.a4=d.a4;
+  if(int(d.bpm,30,240)) state.bpm=d.bpm;
+  if(typeof d.sig==='string'&&d.sig in SIGS) state.sig=d.sig;
+  if(int(d.pat,0,9)&&d.pat<PATS[state.sig].length) state.pat=d.pat;
+  if(typeof d.patChord==='boolean') state.patChord=d.patChord;
+  if(int(d.btProg,0,9)) state.btProg=d.btProg;
+  if(int(d.btStyle,0,STYLES.length-1)) state.btStyle=d.btStyle;
+  if(int(d.autoSp,1,5)) state.autoSp=d.autoSp;
+  if(Array.isArray(d.songs)){
+    state.songs=d.songs.filter(s=>s&&str(s.id,40)&&str(s.title,200)&&str(s.text,20000)).slice(0,200).map(s=>({
+      id:s.id,title:s.title,text:s.text,tr:int(s.tr,-11,11)?s.tr:0,capo:int(s.capo,0,9)?s.capo:0,bpm:int(s.bpm,30,240)?s.bpm:90
+    }));
+  }
+}
+
+/* ---------- Kaydırmalı seçiciler ----------
+   Ortadaki öğe seçili; komşular küçülüp silikleşir. off: parmağın sürüklediği kesirli kayma (1 = bir öğe). */
+const RP={big:{s1:.48,o1:.32,div:3},mini:{s1:.74,o1:.45,div:2.8},mid:{s1:.6,o1:.4,div:2.3},icons:{s1:.66,o1:.42,div:4.2}};
+const rpOf=c=>c.classList.contains('icons')?RP.icons:c.classList.contains('mid')?RP.mid:c.classList.contains('mini')?RP.mini:RP.big;
+function roleAt(a,R){
+  if(a<=1) return {s:1-(1-R.s1)*a,o:1-(1-R.o1)*a};
+  const t=Math.min(a-1,1); return {s:R.s1*(1-.35*t),o:R.o1*(1-t)};
+}
+const lenCls=t=>{const n=[...t].length;return n<=2?'':n===3?' l3':n===4?' l4':' l5';};
+function carousel(k,fn,kind){
+  const isMini=!!kind&&(kind.includes('mini')||kind.includes('icons')), R=RP[kind&&kind.includes('icons')?'icons':kind&&kind.includes('mid')?'mid':isMini?'mini':'big'];
+  let h=`<div class="car${kind?' '+kind:''}" data-k="${k}">`;
+  for(let p=-2;p<=2;p++){
+    const r=roleAt(Math.abs(p),R), t=fn(p);
+    h+=`<span class="ci${isMini?'':lenCls(t)}" data-p="${p}" style="--p:${p};--sc:${r.s};--op:${r.o}"${p?' aria-hidden="true"':''}>${t}</span>`;
+  }
+  return h+'</div>';
+}
+const swipeHead=(k,fn,below,kind)=>`<div class="rswipe" data-k="${k}"><button class="nb" data-act="rstep" data-k="${k}" data-v="-1" aria-label="Önceki">${CHEV_L}</button>${carousel(k,fn,kind)}<button class="nb" data-act="rstep" data-k="${k}" data-v="1" aria-label="Sonraki">${CHEV_R}</button><div class="rc">${below}</div></div>`;
+function layoutCar(c,off){
+  const w=c.clientWidth; if(!w) return;
+  const R=rpOf(c), cw=w/R.div;
+  c.querySelectorAll('.ci').forEach(el=>{
+    const q=+el.dataset.p+off, r=roleAt(Math.abs(q),R);
+    el.style.transform=`translateX(-50%) translateX(${(q*cw).toFixed(2)}px) scale(${r.s.toFixed(4)})`;
+    el.style.opacity=r.o.toFixed(3);
+  });
+}
+const carOff={};
+function fixCars(){document.querySelectorAll('.car').forEach(c=>layoutCar(c,carOff[c.dataset.k]||0));}
+const carEl=k=>document.querySelector('.car[data-k="'+k+'"]');
+const reduceMotion=()=>!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const tweens={};
+/* Bırakınca ya da oka basınca yumuşakça yerine oturur. */
+function settle(k,from){
+  const tok={}; tweens[k]=tok;
+  if(reduceMotion()||!from){carOff[k]=0;const c=carEl(k);if(c) layoutCar(c,0);return;}
+  const t0=performance.now(), dur=Math.min(620,380+Math.abs(from)*120);
+  const ease=t=>1-Math.pow(1-t,4);
+  const f=now=>{
+    if(tweens[k]!==tok) return;
+    const t=Math.min(1,(now-t0)/dur), off=from*(1-ease(t));
+    carOff[k]=off; const c=carEl(k); if(c) layoutCar(c,off);
+    if(t<1) requestAnimationFrame(f); else carOff[k]=0;
+  };
+  requestAnimationFrame(f);
+}
+const tip=(id,text)=>state.tips[id]?'':`<div class="tip"><p>${text}</p><button class="link" data-act="tip" data-v="${id}">Tamam</button></div>`;
+const chordName=(r,q)=>nm(r)+QBY[q].sym;
+const chip=(c,cls)=>`<button class="cchip${cls?' '+cls:''}" data-act="chord" data-root="${c.r}" data-q="${c.q}">${chordName(c.r,c.q)}</button>`;
+
+/* ---------- Akor şeması ---------- */
+function diagram(v,root){
+  const W=240,H=314,x0=52,sx=30,top=64,fh=42,nf=5,L=state.lefty;
+  const fr=v.frets,fg=v.fingers;
+  const pos=fr.filter(f=>f>0);
+  const mx=pos.length?Math.max(...pos):0, mn=pos.length?Math.min(...pos):1;
+  const start=mx<=5?1:mn;
+  const isRoot=i=>fr[i]>=0&&(OPEN[i]+fr[i])%12===root;
+  const X=i=>x0+(L?5-i:i)*sx;
+  const Y=f=>top+(f-start+.5)*fh;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(v.label)}">`;
+  for(let f=start;f<start+nf;f++){
+    const y=Y(f);
+    if(f===12) s+=`<circle class="d-inlay" cx="${x0+1.5*sx}" cy="${y}" r="7"/><circle class="d-inlay" cx="${x0+3.5*sx}" cy="${y}" r="7"/>`;
+    else if([3,5,7,9,15].includes(f)) s+=`<circle class="d-inlay" cx="${x0+2.5*sx}" cy="${y}" r="7"/>`;
+  }
+  for(let i=0;i<=nf;i++){
+    const y=top+i*fh;
+    s+=i===0&&start===1?`<line class="d-nut" x1="${x0-3}" x2="${x0+5*sx+3}" y1="${y-1}" y2="${y-1}"/>`:`<line class="d-fret" x1="${x0}" x2="${x0+5*sx}" y1="${y}" y2="${y}"/>`;
+  }
+  const sw=[2.6,2.1,1.7,1.4,1.1,.9];
+  for(let i=0;i<6;i++) s+=`<line class="d-str" data-s="${i}" x1="${X(i)}" x2="${X(i)}" y1="${top}" y2="${top+nf*fh}" stroke-width="${sw[i]}"/>`;
+  if(start>1) s+=L?`<text class="d-pos" x="${x0+5*sx+34}" y="${top+fh/2+5}">${start}.</text>`:`<text class="d-pos" x="${x0-16}" y="${top+fh/2+5}">${start}.</text>`;
+  for(let i=0;i<6;i++){
+    if(fr[i]===-1) s+=`<path class="d-x" d="M${X(i)-6} ${top-24}l12 12M${X(i)+6} ${top-24}l-12 12"/>`;
+    else if(fr[i]===0) s+=`<circle class="d-open${isRoot(i)?' r':''}" cx="${X(i)}" cy="${top-18}" r="6"/>`;
+  }
+  const b=fr.map((f,i)=>f>0&&fg[i]===1?i:-1).filter(i=>i>=0);
+  let barre=null;
+  if(b.length>=2&&b.every(i=>fr[i]===fr[b[0]])) barre={a:b[0],z:b[b.length-1],f:fr[b[0]]};
+  if(barre){
+    const y=Y(barre.f), xa=X(barre.a), xz=X(barre.z);
+    s+=`<rect class="d-barre" x="${Math.min(xa,xz)-12}" y="${y-12}" width="${Math.abs(xz-xa)+24}" height="24" rx="12"/>`;
+    b.forEach(i=>{
+      if(isRoot(i)) s+=`<circle class="d-dot r" cx="${X(i)}" cy="${y}" r="12"/><text class="d-num r" x="${X(i)}" y="${y+1}">1</text>`;
+    });
+    if(!isRoot(barre.a)) s+=`<text class="d-num" x="${xa}" y="${y+1}">1</text>`;
+  }
+  for(let i=0;i<6;i++){
+    if(fr[i]<=0) continue;
+    if(barre&&fg[i]===1&&fr[i]===barre.f) continue;
+    const r=isRoot(i), y=Y(fr[i]);
+    s+=`<circle class="d-dot${r?' r':''}" cx="${X(i)}" cy="${y}" r="12"/>`;
+    if(fg[i]>0) s+=`<text class="d-num${r?' r':''}" x="${X(i)}" y="${y+1}">${fg[i]}</text>`;
+  }
+  for(let i=0;i<6;i++) s+=`<text class="d-lab" x="${X(i)}" y="${H-8}">${nm(OPEN[i])}</text>`;
+  s+='</svg>';
+  return {svg:s,barre:!!barre};
+}
+const strumBox=(r,q,vi,svg)=>`<div class="dwrap strum soft" data-r="${r}" data-q="${q}" data-vi="${vi}">${svg}</div>`;
+
+/* ---------- Akorlar ---------- */
+function renderCard(){
+  const q=QBY[state.q], root=state.root, vs=voicings(root,state.q);
+  state.vi=clamp(state.vi,0,Math.max(vs.length-1,0));
+  const v=vs[state.vi], qi=QT.indexOf(q);
+  const notes=q.iv.map(i=>`<span class="note${i===0?' r':''}">${nm(root+i)}</span>`).join('');
+  const head=swipeHead('root',p=>p===0?nm(root)+q.sym:nm(root+p),
+    carousel('q',p=>{const x=QT[qi+p];return x?x.ln:'';},'mini')+`<div class="cnotes soft">${notes}</div>`);
+  $('#tip-akorlar').innerHTML=tip('akorlar','Büyük notayı ve altındaki mavi yazıyı sağa sola kaydır. Tellerin üstünden parmağını sürükleyerek akoru çal.');
+  if(!v){$('#card').innerHTML=head+'<p class="empty">Bu akor için şema bulunamadı.</p>';fixCars();return;}
+  const labs=shapeLabels(vs), d=diagram(v,root);
+  $('#card').innerHTML=head+strumBox(root,state.q,state.vi,d.svg)+
+    carousel('vi',p=>labs[state.vi+p]||'','mini')+
+    `<p class="hint">${vs.length>1?vs.length+' şekil':'Tek şekil'}${d.barre?' · barre':''} · tellerin üstünden parmağını sürükle</p>`;
+  fixCars();
+}
+let recT=null;
+function noteRecent(){
+  clearTimeout(recT);
+  recT=setTimeout(()=>{
+    const k=state.root+'|'+state.q;
+    state.recent=[k,...state.recent.filter(x=>x!==k)].slice(0,8);
+    renderRecent(); save();
+  },1200);
+}
+function renderRecent(){
+  const cur=state.root+'|'+state.q, items=state.recent.filter(x=>x!==cur);
+  $('#recent').innerHTML=items.length?`<div class="recent"><span class="rl">Son</span><div class="rrow">${items.map(x=>{const [r,q]=x.split('|');return `<button class="cchip" data-act="pick" data-root="${r}" data-q="${q}">${chordName(+r,q)}</button>`;}).join('')}</div></div>`:'';
+}
+
+/* ---------- Ton: gam klavyesi + akorlar ---------- */
+/* Klavye: ince Mi teli üstte. real=true ise perde aralıkları gerçek gitardaki gibi daralır. Solak modda yatay aynalanır. */
+function board(root,sc,pos,o){
+  const N=o.N,W=o.W,H=o.H,L=state.lefty,id=o.id;
+  const x0=o.openW,x1=W-10,top=o.top,bot=H-o.bot,sp=(bot-top)/5;
+  const tot=1-Math.pow(2,-N/12);
+  const fx=n=>o.real?x0+(x1-x0)*(1-Math.pow(2,-n/12))/tot:x0+(x1-x0)*n/N;
+  const MX=x=>L?W-x:x, Y=s=>top+(5-s)*sp;
+  const set=scaleSet(root,sc), blue=sc.blue!=null?(root+sc.blue)%12:-1;
+  const inPos=pos?new Set(pos.cells.map(c=>c[0]+','+c[1])):null;
+  const minW=fx(N)-fx(N-1), r=Math.min(o.rmax,sp*.42,minW*.44);
+  let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(nm(root)+' '+sc.n)} klavyede">`;
+  s+=`<defs><linearGradient id="wd${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="fb-w1"/><stop offset="1" class="fb-w2"/></linearGradient></defs>`;
+  const bx=Math.min(MX(x0),MX(x1));
+  s+=`<rect x="${bx}" y="${top-sp*.55}" width="${x1-x0}" height="${5*sp+sp*1.1}" fill="url(#wd${id})" rx="3"/>`;
+  const mid=n=>(fx(n-1)+fx(n))/2, iy=(top+bot)/2, ir=Math.min(sp*.22,7);
+  [3,5,7,9,15].forEach(f=>{if(f<=N) s+=`<circle class="fb-inlay" cx="${MX(mid(f))}" cy="${iy}" r="${ir}"/>`;});
+  if(N>=12) s+=`<circle class="fb-inlay" cx="${MX(mid(12))}" cy="${top+1.5*sp}" r="${ir}"/><circle class="fb-inlay" cx="${MX(mid(12))}" cy="${top+3.5*sp}" r="${ir}"/>`;
+  for(let n=1;n<=N;n++) s+=`<line class="fb-fret" x1="${MX(fx(n))}" x2="${MX(fx(n))}" y1="${top-sp*.55}" y2="${bot+sp*.55}" stroke-width="${o.real?3:2}"/>`;
+  s+=`<rect class="fb-nut" x="${L?MX(x0):MX(x0)-o.nutW}" y="${top-sp*.55}" width="${o.nutW}" height="${5*sp+sp*1.1}"/>`;
+  const sw=o.real?[3.4,2.8,2.2,1.7,1.3,1]:[2.4,2,1.6,1.3,1,.8];
+  for(let i=0;i<6;i++) s+=`<line class="fb-str" x1="${MX(x0-o.openW*.7)}" x2="${MX(x1)}" y1="${Y(i)}" y2="${Y(i)}" stroke-width="${sw[i]}"/>`;
+  for(let i=0;i<6;i++) s+=`<text class="fb-lab" x="${MX(o.openW*.14)}" y="${Y(i)}" font-size="${o.fs*.95}">${nm(OPEN[i])}</text>`;
+  [3,5,7,9,12,15].forEach(f=>{if(f<=N) s+=`<text class="fb-num" x="${MX(mid(f))}" y="${H-4}" font-size="${o.fs}">${f}</text>`;});
+  let dots='';
+  for(let st=0;st<6;st++)for(let f=0;f<=N;f++){
+    const pc=(OPEN[st]+f)%12;
+    if(!set.has(pc)) continue;
+    const cx=MX(f===0?x0-o.openW*.42:mid(f)), cy=Y(st);
+    if(inPos&&!inPos.has(st+','+f)){dots+=`<circle class="fb-faint" cx="${cx}" cy="${cy}" r="${r*.38}"/>`;continue;}
+    const iv=mod(pc-root,12), idx=sc.iv.indexOf(iv);
+    const lab=state.sLab==='deg'?sc.deg[idx]:nm(pc);
+    const cls=pc===root?' r':(pc===blue?' b':'');
+    const n=[...lab].length, fs=r*(n<=1?1.1:n===2?.95:n===3?.74:.62);
+    dots+=`<g class="fd" data-s="${st}" data-f="${f}"><circle class="fb-hit" cx="${cx}" cy="${cy}" r="${r*1.3}"/><circle class="fb-dot${cls}" cx="${cx}" cy="${cy}" r="${r}"/><text class="fb-t${cls}" x="${cx}" y="${cy+r*.04}" font-size="${fs.toFixed(1)}">${lab}</text></g>`;
+  }
+  return s+dots+'</svg>';
+}
+const BOARD_SMALL={N:12,W:400,H:186,openW:44,top:20,bot:36,nutW:5,rmax:11,fs:11,real:false,id:'c'};
+const BOARD_FULL={N:15,W:1100,H:350,openW:70,top:30,bot:62,nutW:8,rmax:21,fs:16,real:true,id:'f'};
+function posPills(ps){
+  return `<div class="posrow" role="group" aria-label="Pozisyon"><button class="pill" data-act="spos" data-v="0" aria-pressed="${state.sPos===0}">Tümü</button>`+
+    ps.map((p,i)=>`<button class="pill" data-act="spos" data-v="${i+1}" aria-pressed="${state.sPos===i+1}">${i+1}</button>`).join('')+'</div>';
+}
+const labSeg=()=>`<div class="segc"><button data-act="slab" data-v="note" aria-pressed="${state.sLab==='note'}">Nota adı</button><button data-act="slab" data-v="deg" aria-pressed="${state.sLab==='deg'}">Derece</button></div>`;
+const keyWord=k=>k==='major'?'majör':k==='minor'?'minör':SBY[k].n;
+function renderTon(){
+  const sc=SBY[state.sType], root=state.sRoot, ps=positions(root,sc);
+  if(state.sPos>ps.length) state.sPos=0;
+  const pos=state.sPos?ps[state.sPos-1]:null, si=SCALES.indexOf(sc);
+  const notes=sc.iv.map(i=>`<span class="note${i===0?' r':''}">${nm(root+i)}</span>`).join('');
+  $('#tip-ton').innerHTML=tip('ton','Notayı ve mavi gam adını kaydırarak değiştir. Klavyeyi büyük görmek için Tam ekran\'a dokun ve telefonu yana çevir.');
+  $('#tcard').innerHTML=swipeHead('sroot',p=>nm(root+p),
+    carousel('stype',p=>{const x=SCALES[si+p];return x?x.sn:'';},'mini')+`<div class="cnotes soft">${notes}</div>`,'sm');
+  const info=pos?`Pozisyon ${state.sPos} · ${pos.lo===0?'açık':pos.lo}–${pos.hi}. perde`:'Tüm notalar · 12 perde';
+  $('#bcard').innerHTML=`<div class="dwrap wide soft${bt.on?' playing':''}">${board(root,sc,pos,BOARD_SMALL)}</div>`+posPills(ps)+
+    `<p class="hint">${info} · notaya dokununca sesi çıkar</p>`+labSeg()+
+    `<button class="fsbtn" data-act="fs">${ICON_ROT}Tam ekran · telefonu yana çevir</button>`;
+  const P=SBY[sc.parent], dia=diatonic(root,P);
+  const rows=dia.map(c=>`<div class="krow"><span class="kn">${c.n}</span><span class="kchips">${chip(c)}${c.q7?chip({r:c.r,q:c.q7},'alt'):''}</span></div>`).join('');
+  $('#tchords').innerHTML=`<h2 class="sh">${nm(root)} ${keyWord(sc.parent)} tonunun akorları</h2><div class="group">${rows}</div><p class="foot">Akora dokununca şeması açılır. Çerçeveli olan 7'li halidir.</p>`;
+  const pr=progChords(root,sc.parent);
+  $('#tprog').innerHTML=pr.length?`<h2 class="sh">Popüler ilerlemeler</h2><div class="group">${pr.map((p,i)=>`<div class="orow"><div class="oh"><strong>${p.n}</strong><span>${p.d}</span><button class="mini-play" data-act="btprog" data-v="${i}">${ICON_PLAY}Arkada çal</button></div><div class="srow">${p.c.map(c=>chip(c)).join('')}</div></div>`).join('')}</div>`:'';
+  renderBT();
+  fixCars(); showBar();
+}
+function renderFS(){
+  if(!state.fs) return;
+  const sc=SBY[state.sType], root=state.sRoot, ps=positions(root,sc);
+  const pos=state.sPos?ps[state.sPos-1]:null;
+  const X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const FLIP='<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4"/><path d="M20 12a8 8 0 0 1-14 5.3"/><path d="M6 21v-4h4"/></svg>';
+  const fi=$('#fsIn'); fi.classList.toggle('flip',state.fsFlip);
+  fi.innerHTML=`<div class="fs-top">
+      <button class="fsx" data-act="fsclose" aria-label="Tam ekranı kapat">${X}</button>
+      <div class="fs-title"><button class="nb" data-act="rstep" data-k="sroot" data-v="-1" aria-label="Önceki nota">${CHEV_L}</button>${nm(root)} · ${sc.n}<button class="nb" data-act="rstep" data-k="sroot" data-v="1" aria-label="Sonraki nota">${CHEV_R}</button></div>
+      <button class="fsx play${bt.on?' on':''}" data-act="bt" aria-label="${bt.on?'Arka plan müziğini durdur':'Arka plan müziğini çal'}">${bt.on?ICON_STOP:ICON_PLAY}</button><span class="fs-now" id="fsNow"></span>
+      ${posPills(ps)}<button class="fs-deg" data-act="slab" data-v="${state.sLab==='deg'?'note':'deg'}" aria-pressed="${state.sLab==='deg'}">Derece</button><span class="fs-sp"></span>
+      <button class="fsx" data-act="fsflip" aria-label="Ters çevir">${FLIP}</button>
+    </div>
+    <div class="fs-board${bt.on?' playing':''}">${board(root,sc,pos,BOARD_FULL)}</div>`;
+  showBar();
+}
+function openFS(){
+  state.fs=true; $('#fs').hidden=false; renderFS();
+  try{const el=document.documentElement;if(el.requestFullscreen){el.requestFullscreen().then(()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(_){}}).catch(()=>{});}}catch(e){}
+}
+function closeFS(){
+  state.fs=false; $('#fs').hidden=true; $('#fsIn').innerHTML='';
+  try{if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});}catch(e){}
+}
+
+/* ---------- Akort ---------- */
+const curInst=()=>INST.find(x=>x.k===state.inst)||INST[0];
+const curTun=()=>{const I=curInst();return I.tun[clamp(state.tunI,0,I.tun.length-1)];};
+const course=(I,i)=>I.pairs?Math.floor(i/2):i;
+const noteOct=m=>`${nm(m)}<tspan class="po" font-size="0.62em" dy="0.25em">${Math.floor(m/12)-1}</tspan>`;
+function strLabel(I,T,i){
+  const num=I.nc-course(I,i);
+  if(!I.pairs) return num+'. tel';
+  const mate=T.m[i^1];
+  return num+'. çift'+(T.m[i]>mate?' · oktav tel':T.m[i]<mate?' · kalın tel':'');
+}
+/* Kafa ve burgu çizimi: gitar dik, kafa yukarıda; teller soldan sağa kalından inceye. */
+function headSVG(I,T,sel){
+  const W=300,H=410,cx=150,y0=14,yN=318,nc=I.nc,n=T.m.length;
+  const nw=({4:56,5:72,6:70,7:84}[nc]||70)+(I.bass?10:0);
+  const inline=I.shape==='inline';
+  const headW=I.pairs?134:(nc===4&&!inline?104:120);
+  const xL=inline?cx-nw/2-60:cx-headW/2, xR=inline?cx+nw/2+12:cx+headW/2;
+  const yA=inline||I.pairs?y0+32:y0+50, yB=inline||I.pairs?yN-82:yN-96;
+  const gap=Math.min(60,(yB-yA)/Math.max(Math.max(I.L.length,I.R.length)-1,1)), yC=(yA+yB)/2;
+  const pegY=(k,j)=>k===1?yC:yC-(k-1)*gap/2+j*gap;
+  const r=Math.min(21,gap*.46);
+  const peg={};
+  I.L.forEach((si,j)=>{peg[si]={px:xL+22,kx:xL-r-6,y:pegY(I.L.length,j)};});
+  I.R.forEach((si,j)=>{peg[si]={px:xR-22,kx:xR+r+6,y:pegY(I.R.length,j)};});
+  const nutX=i=>{const c=course(I,i);let x=cx-nw/2+(c+.5)*nw/nc;if(I.pairs)x+=(i%2?2.6:-2.6);return x;};
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(I.n)} kafası ve burguları">`;
+  s+=`<path class="g-neck" d="M${cx-nw/2-4} ${yN} L${cx+nw/2+4} ${yN} L${cx+nw/2+10} ${H} L${cx-nw/2-10} ${H} Z"/>`;
+  [yN+40,yN+80].forEach(y=>{const hw=nw/2+4+(y-yN)/(H-yN)*6;s+=`<line class="g-fret" x1="${cx-hw}" x2="${cx+hw}" y1="${y}" y2="${y}"/>`;});
+  s+=`<path class="g-head" d="M${xL} ${y0+28} Q${xL} ${y0} ${xL+28} ${y0} L${xR-28} ${y0} Q${xR} ${y0} ${xR} ${y0+28} L${xR} ${yN-64} L${cx+nw/2+4} ${yN} L${cx-nw/2-4} ${yN} L${xL} ${yN-64} Z"/>`;
+  if(I.shape==='slot'){
+    s+=`<rect class="g-slot" x="${xL+13}" y="${yA-24}" width="18" height="${yB-yA+48}" rx="9"/><rect class="g-slot" x="${xR-31}" y="${yA-24}" width="18" height="${yB-yA+48}" rx="9"/>`;
+  }
+  s+=`<rect class="g-nut" x="${cx-nw/2-4}" y="${yN-4}" width="${nw+8}" height="7" rx="2"/>`;
+  for(let i=0;i<n;i++){
+    const c=course(I,i), P=peg[i];
+    let w=(I.bass?2.8:2.1)-(I.bass?1.2:1.3)*c/Math.max(nc-1,1);
+    if(I.pairs&&T.m[i]>T.m[i^1]) w*=.6;
+    s+=`<polyline class="g-str${i===sel?' on':''}" stroke-width="${w.toFixed(2)}" points="${P.px},${P.y} ${nutX(i).toFixed(1)},${yN} ${nutX(i).toFixed(1)},${H}"/>`;
+  }
+  for(let i=0;i<n;i++){const P=peg[i];s+=`<line class="g-shaft" x1="${P.kx}" x2="${P.px}" y1="${P.y}" y2="${P.y}"/>`;}
+  for(let i=0;i<n;i++){const P=peg[i];s+=`<circle class="g-post" cx="${P.px}" cy="${P.y}" r="4.5"/>`;}
+  const fs=Math.max(10,Math.min(16,r*.78));
+  for(let i=0;i<n;i++){
+    const P=peg[i], m=T.m[i];
+    s+=`<g class="peg${i===sel?' on':''}" data-act="peg" data-v="${i}" role="button" tabindex="0" aria-pressed="${i===sel}" aria-label="${strLabel(I,T,i)} ${nm(m)}${Math.floor(m/12)-1}">`+
+       `<circle class="halo" cx="${P.kx}" cy="${P.y}" r="${r}"/><circle class="pk" cx="${P.kx}" cy="${P.y}" r="${r}"/>`+
+       `<text class="pt" x="${P.kx-fs*.12}" y="${P.y}" font-size="${fs.toFixed(1)}">${noteOct(m)}</text></g>`;
+  }
+  return s+'</svg>';
+}
+/* Çalgı ikonu: kafa ve burguların dizilişi (3+3, tek sıra, 6+6, 2+2…). */
+function instIcon(I){
+  const inline=I.shape==='inline', nL=I.L.length, nR=I.R.length, maxN=Math.max(nL,nR);
+  const hx0=inline?17:13, hx1=inline?31:29, y0=3, y1=33;
+  const pr=maxN>5?1.6:maxN>3?2.1:2.6, ya=y0+5, yb=y1-5;
+  const yAt=(k,j)=>k===1?(ya+yb)/2:ya+j*(yb-ya)/(k-1);
+  let s=`<svg viewBox="0 0 44 50" role="img" aria-label="${esc(I.n)}"><path class="ico-head" d="M${hx0} ${y0+5}Q${hx0} ${y0} ${hx0+5} ${y0}L${hx1-5} ${y0}Q${hx1} ${y0} ${hx1} ${y0+5}L${hx1} ${y1-4}L${hx1-3} ${y1+2}L${hx0+3} ${y1+2}L${hx0} ${y1-4}Z"/>`;
+  s+=`<rect class="ico-neck" x="${(hx0+hx1)/2-4}" y="${y1+2}" width="8" height="${50-y1-2}" rx="1"/>`;
+  for(let j=0;j<nL;j++) s+=`<circle class="ico-peg" cx="${hx0-4}" cy="${yAt(nL,j)}" r="${pr}"/>`;
+  for(let j=0;j<nR;j++) s+=`<circle class="ico-peg" cx="${hx1+4}" cy="${yAt(nR,j)}" r="${pr}"/>`;
+  return s+'</svg>';
+}
+function renderTuner(){
+  const I=curInst(), T=curTun(), i=state.toneI, ii=INST.indexOf(I), ti=I.tun.indexOf(T);
+  let readout;
+  if(i<0) readout='<div class="readout"><div class="rhint">Bir burguya dokun</div><div class="csub">O telin doğru sesi çalar</div></div>';
+  else{
+    const m=T.m[i];
+    readout=`<div class="readout"><div class="csub">${strLabel(I,T,i)}</div><div class="rnote">${nm(m)}<sub>${Math.floor(m/12)-1}</sub></div><div class="rhz">${midiHz(m,state.a4).toFixed(2)} Hz</div></div>`;
+  }
+  const head=swipeHead('inst',p=>{const x=INST[ii+p];return x?instIcon(x):'';},
+    carousel('tun',p=>{const x=I.tun[ti+p];return x?x.n:'';},'mini')+`<div class="csub">${I.n} · ${T.m.filter((m,k)=>!I.pairs||k%2===1).map(m=>nm(m)).join(' ')}</div>`,'icons');
+  $('#tip-akort').innerHTML=tip('akort','Üstteki adı kaydırarak çalgıyı, mavi yazıyı kaydırarak akort düzenini seç. Burguya dokun, o telin sesi çalsın; gitarında aynı sesi bulana kadar burguyu çevir.');
+  $('#tuner').innerHTML=head+readout+`<div class="gwrap soft">${headSVG(I,T,i)}</div>`;
+  $('#a4v').textContent=state.a4+' Hz';
+  const notes=[];
+  if(I.pairs) notes.push('Çiftlerde önce kalın teli, sonra oktav ya da eş teli akort et.');
+  if(I.bass) notes.push('Bas sesleri telefon hoparlöründen zayıf çıkar, kulaklıkla daha net duyarsın.');
+  $('#tunerfoot').textContent=notes.join(' ');
+  $('#tunerfoot').hidden=!notes.length;
+  fixCars();
+}
+
+/* ---------- Ses motoru ---------- */
+let ac=null,master=null,unlocked=false;
+/* iOS'ta sessiz modda Web Audio susar; kısa bir sessiz ses çalmak oturumu "oynatma" kipine alır. */
+function unlock(){
+  if(unlocked) return; unlocked=true;
+  try{
+    const n=800,b=new Uint8Array(44+n),dv=new DataView(b.buffer);
+    const w=(o,s)=>{for(let i=0;i<s.length;i++)b[o+i]=s.charCodeAt(i);};
+    w(0,'RIFF');dv.setUint32(4,36+n,true);w(8,'WAVEfmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);
+    dv.setUint32(24,8000,true);dv.setUint32(28,8000,true);dv.setUint16(32,1,true);dv.setUint16(34,8,true);w(36,'data');dv.setUint32(40,n,true);b.fill(128,44);
+    let s='';b.forEach(x=>{s+=String.fromCharCode(x);});
+    const a=new Audio('data:audio/wav;base64,'+btoa(s)); a.play().catch(()=>{});
+  }catch(e){}
+}
+function ensureAudio(){
+  try{
+    try{if(navigator.audioSession) navigator.audioSession.type='playback';}catch(e){}
+    if(!ac){
+      ac=new (window.AudioContext||window.webkitAudioContext)();
+      master=ac.createDynamicsCompressor(); master.connect(ac.destination);
+    }
+    unlock();
+    if(ac.state!=='running') ac.resume();
+  }catch(e){}
+}
+['pointerup','touchend','click'].forEach(t=>document.addEventListener(t,ensureAudio,{passive:true}));
+
+function pluckAt(i,fret,t,peak,len){
+  try{
+    if(!ac||ac.state!=='running'||fret<0) return;
+    const hz=440*Math.pow(2,(MIDI[i]+fret-69)/12), dur=len||2.6-i*.18;
+    const g=ac.createGain(), lp=ac.createBiquadFilter();
+    lp.type='lowpass'; lp.frequency.value=2600;
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(peak,t+.006);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    [['triangle',1,1],['sine',2,.35],['sawtooth',1,.1]].forEach(([type,m,a])=>{
+      const o=ac.createOscillator(), og=ac.createGain();
+      o.type=type; o.frequency.value=hz*m; og.gain.value=a;
+      o.connect(og); og.connect(g); o.start(t); o.stop(t+dur+.1);
+    });
+    g.connect(lp); lp.connect(master);
+  }catch(e){}
+}
+const pluck=(i,fret,delay)=>{if(ac) pluckAt(i,fret,ac.currentTime+.005+(delay||0),.34);};
+function buzz(svg,i){
+  const el=svg.querySelector('.d-str[data-s="'+i+'"]'); if(!el) return;
+  el.classList.remove('buzz'); void el.getBoundingClientRect(); el.classList.add('buzz');
+  setTimeout(()=>el.classList.remove('buzz'),400);
+}
+/* Akor şemasında tel i'nin x konumu: 52 + 30·sıra (viewBox genişliği 240) */
+const strX=i=>52+30*(state.lefty?5-i:i);
+const svgX=(svg,e)=>{const r=svg.getBoundingClientRect();return (e.clientX-r.left)*240/r.width;};
+function hit(svg,from,to){
+  const box=svg.closest('.strum'); if(!box) return;
+  const v=voicings(+box.dataset.r,box.dataset.q)[+box.dataset.vi]; if(!v) return;
+  const idx=[];
+  for(let i=0;i<6;i++){const X=strX(i);if((from<X&&to>=X)||(from>X&&to<=X)) idx.push(i);}
+  idx.sort((a,b)=>to>from?strX(a)-strX(b):strX(b)-strX(a));
+  idx.forEach((i,k)=>{pluck(i,v.frets[i],k*.014);buzz(svg,i);});
+}
+let drag=null;
+document.addEventListener('pointerdown',e=>{
+  const svg=e.target.closest&&e.target.closest('.strum svg'); if(!svg) return;
+  ensureAudio();
+  const x=svgX(svg,e); drag={id:e.pointerId,x,svg};
+  try{svg.setPointerCapture(e.pointerId);}catch(_){}
+  hit(svg,x-10,x+10);
+});
+document.addEventListener('pointermove',e=>{
+  if(!drag||e.pointerId!==drag.id) return;
+  const x=svgX(drag.svg,e); hit(drag.svg,drag.x,x); drag.x=x;
+});
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,e=>{if(drag&&e.pointerId===drag.id) drag=null;}));
+/* Klavyedeki notaya dokununca sesi */
+document.addEventListener('pointerdown',e=>{
+  const g=e.target.closest&&e.target.closest('.fd'); if(!g) return;
+  ensureAudio(); pluck(+g.dataset.s,+g.dataset.f,0);
+  g.classList.remove('hit'); void g.getBoundingClientRect(); g.classList.add('hit');
+});
+
+/* ---------- Akort sesi ---------- */
+let tone=null;
+function startTone(i){
+  ensureAudio(); if(!ac) return;
+  stopTone(false);
+  try{
+    const hz=midiHz(curTun().m[i],state.a4), now=ac.currentTime;
+    const g=ac.createGain();
+    g.gain.setValueAtTime(.0001,now); g.gain.exponentialRampToValueAtTime(.3,now+.06);
+    /* Telefon hoparlörü kalın sesleri zor verir; üst harmonikler perdeyi duyulur kılar. */
+    const mix=hz<75?[[1,.8],[2,.7],[3,.45],[4,.3]]:[[1,1],[2,.55],[3,.3]];
+    const oscs=mix.map(([m,a])=>{
+      const o=ac.createOscillator(), og=ac.createGain();
+      o.type='sine'; o.frequency.value=hz*m; og.gain.value=a;
+      o.connect(og); og.connect(g); o.start(); return o;
+    });
+    g.connect(master);
+    tone={i,g,oscs,timer:setTimeout(()=>{stopTone(true);},15000)};
+    state.toneI=i;
+  }catch(e){state.toneI=-1;}
+}
+function stopTone(rerender){
+  if(tone){
+    const t=tone; tone=null; clearTimeout(t.timer);
+    try{
+      const now=ac.currentTime;
+      t.g.gain.cancelScheduledValues(now);
+      t.g.gain.setValueAtTime(Math.max(t.g.gain.value,.0002),now);
+      t.g.gain.exponentialRampToValueAtTime(.0001,now+.18);
+      t.oscs.forEach(o=>{try{o.stop(now+.2);}catch(_){}});
+    }catch(e){}
+  }
+  state.toneI=-1;
+  if(rerender) renderTuner();
+}
+function togglePeg(i){
+  if(state.toneI===i) stopTone(true);
+  else{startTone(i);renderTuner();}
+}
+
+/* ---------- Metronom + ritim kalıbı ---------- */
+const metro={on:false,slot:0,next:0,timer:null,vis:[]};
+const curPat=()=>PATS[state.sig][clamp(state.pat,0,PATS[state.sig].length-1)];
+function click(t,level){
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.type='triangle'; o.frequency.value=level>=2?1568:(level>1?1319:1047);
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(level>=2?.7:.5,t+.002);
+  g.gain.exponentialRampToValueAtTime(.0001,t+.05);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t+.06);
+}
+/* Seçili akoru tarar: aşağı vuruş kalından inceye, yukarı vuruş inceden kalına ve daha hafif. */
+function strumAt(t,dir){
+  const vs=voicings(state.root,state.q), v=vs[state.vi]||vs[0]; if(!v) return;
+  const order=dir>0?[0,1,2,3,4,5]:[5,4,3,2];
+  let k=0;
+  order.forEach(i=>{if(v.frets[i]>=0){pluckAt(i,v.frets[i],t+k*(dir>0?.012:.009),dir>0?.2:.12);k++;}});
+}
+function metroTick(){
+  try{
+    const S=SIGS[state.sig], spb=S.spb, n=S.acc.length*spb, p=curPat().p;
+    while(metro.next<ac.currentTime+.12){
+      const s=metro.slot%n;
+      if(s%spb===0) click(metro.next,S.acc[s/spb]);
+      if(p&&state.patChord){const ch=p[s];if(ch==='D') strumAt(metro.next,1);else if(ch==='U') strumAt(metro.next,-1);}
+      metro.vis.push({t:metro.next,s});
+      metro.next+=60/state.bpm/spb; metro.slot++;
+    }
+  }catch(e){}
+}
+function showSlot(s){
+  const spb=SIGS[state.sig].spb, beat=s<0?-1:Math.floor(s/spb), onBeat=s>=0&&s%spb===0;
+  document.querySelectorAll('#bdots .bdot').forEach((d,i)=>d.classList.toggle('on',i===beat));
+  document.querySelectorAll('#pslots .ps').forEach((d,i)=>d.classList.toggle('on',i===s));
+  const md=$('#mdot'); if(md&&(onBeat||s<0)){md.classList.toggle('on',onBeat);md.classList.toggle('first',beat===0);}
+}
+function visLoop(){
+  if(!metro.on) return;
+  const now=ac.currentTime;
+  while(metro.vis.length&&metro.vis[0].t<=now) showSlot(metro.vis.shift().s);
+  requestAnimationFrame(visLoop);
+}
+function metroStart(){
+  ensureAudio(); if(!ac) return;
+  btStop();
+  metro.on=true; metro.slot=0; metro.vis=[]; metro.next=ac.currentTime+.1;
+  metro.timer=setInterval(metroTick,25);
+  requestAnimationFrame(visLoop);
+  renderMbar(); if(state.sheet==='metro') renderSheet();
+}
+function metroStop(){
+  if(!metro.on) return;
+  metro.on=false; clearInterval(metro.timer); metro.vis=[]; showSlot(-1);
+  renderMbar(); if(state.sheet==='metro') renderSheet();
+}
+function setBpm(v){
+  state.bpm=clamp(Math.round(v),30,240);
+  renderMbar();
+  const btt=$('#btTempo'); if(btt) btt.textContent='♩ '+state.bpm;
+  if(state.sheet==='metro'){
+    $('#bpmv').textContent=state.bpm; $('#tempoName').textContent=tempoName(state.bpm);
+    const r=$('#bpmRange'); if(r&&r.value!==String(state.bpm)) r.value=state.bpm;
+  }
+}
+const taps=[];
+function tapTempo(){
+  const now=performance.now();
+  if(taps.length&&now-taps[taps.length-1]>2000) taps.length=0;
+  taps.push(now); if(taps.length>6) taps.shift();
+  if(taps.length>=2) setBpm(60000/((taps[taps.length-1]-taps[0])/(taps.length-1)));
+}
+function renderMbar(){
+  if(bt.on){
+    const P=curProg();
+    $('#mmBpm').textContent='♩ '+state.bpm+' · Arka plan';
+    $('#mmSub').textContent=STYLES[state.btStyle].n+(P?' · '+P.c.map(c=>chordName(c.r,c.q)).join(' '):'');
+    $('#mmBtn').innerHTML=ICON_STOP; $('#mmBtn').classList.add('on'); $('#mmBtn').setAttribute('aria-label','Arka plan müziğini durdur');
+    return;
+  }
+  $('#mmBpm').textContent='♩ '+state.bpm+' · '+tempoName(state.bpm);
+  $('#mmSub').textContent=SIGS[state.sig].n+' · '+curPat().n+(curPat().p&&state.patChord?' · '+chordName(state.root,state.q):'');
+  $('#mmBtn').innerHTML=metro.on?ICON_STOP:ICON_PLAY;
+  $('#mmBtn').classList.toggle('on',metro.on);
+  $('#mmBtn').setAttribute('aria-label',metro.on?'Metronomu durdur':'Metronomu başlat');
+}
+function metroSheet(){
+  const S=SIGS[state.sig], P=curPat(), pats=PATS[state.sig], pi=pats.indexOf(P);
+  const counts=S.spb===2?['1','&','2','&','3','&','4','&']:['1','2','3','4','5','6'];
+  const slots=P.p?`<div class="pslots" id="pslots">${[...P.p].map((c,i)=>`<div class="ps${c==='_'?' rest':''}"><b>${c==='D'?'↓':c==='U'?'↑':'·'}</b><small>${counts[i]||''}</small></div>`).join('')}</div>`:
+    '<p class="hint">Sadece metronom tıkı çalar. Bir ritim kalıbı seçersen vuruşlar burada görünür.</p>';
+  return `<div class="card mcard">
+      <div class="bpmbig"><output id="bpmv">${state.bpm}</output><span>BPM</span></div>
+      <div class="csub" id="tempoName" style="margin:-8px 0 0">${tempoName(state.bpm)}</div>
+      <div class="bdots" id="bdots">${S.acc.map((a,i)=>`<i class="bdot${i===0?' first':''}"></i>`).join('')}</div>
+      <div class="mslider">
+        <button class="rnd" data-act="bpm" data-v="-1" aria-label="1 BPM yavaşlat">−</button>
+        <input type="range" id="bpmRange" min="30" max="240" step="1" value="${state.bpm}" aria-label="Tempo">
+        <button class="rnd" data-act="bpm" data-v="1" aria-label="1 BPM hızlandır">+</button>
+      </div>
+      <div class="segc">${Object.keys(SIGS).map(k=>`<button data-act="sig" data-v="${k}" aria-pressed="${k===state.sig}">${SIGS[k].n}</button>`).join('')}</div>
+    </div>
+    <h2 class="sh">Ritim kalıbı</h2>
+    <div class="card">
+      ${carousel('pat',p=>{const x=pats[pi+p];return x?x.n:'';},'mini')}
+      ${slots}
+    </div>
+    ${P.p?`<div class="group"><div class="row"><span id="lpc">Akor sesi · ${chordName(state.root,state.q)}</span><button class="toggle" role="switch" aria-labelledby="lpc" aria-checked="${state.patChord}" data-act="patchord"><i></i></button></div></div>
+    <p class="foot">Açıkken kalıp, Akorlar ekranında seçili akorla çalınır. Kapalıyken okları izleyip kendin çalarsın.</p>`:''}
+    <div class="mbtns">
+      <button class="tapbtn" data-act="tap">Tempo vur</button>
+      <button class="gobtn${metro.on?' on':''}" data-act="metro">${metro.on?'Durdur':'Başlat'}</button>
+    </div>`;
+}
+
+/* ---------- Arka plan müziği ---------- */
+const bt={on:false,next:0,slot:0,timer:null,vis:[],bar:-1};
+const curProgs=()=>progChords(state.sRoot,SBY[state.sType].parent);
+const curProg=()=>{const ps=curProgs();return ps.length?ps[clamp(state.btProg,0,ps.length-1)]:null;};
+let noiseBuf=null;
+function noiseSrc(){
+  if(!noiseBuf){noiseBuf=ac.createBuffer(1,Math.floor(ac.sampleRate*.5),ac.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
+  const s=ac.createBufferSource(); s.buffer=noiseBuf; return s;
+}
+function env(g,t,peak,dur){g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+dur);}
+function kick(t){
+  const o=ac.createOscillator(),g=ac.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(45,t+.12);
+  env(g,t,.9,.35); o.connect(g); g.connect(master); o.start(t); o.stop(t+.4);
+}
+function snare(t){
+  const n=noiseSrc(),f=ac.createBiquadFilter(),g=ac.createGain();
+  f.type='bandpass'; f.frequency.value=1900; f.Q.value=.7;
+  env(g,t,.42,.18); n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t+.2);
+  const o=ac.createOscillator(),og=ac.createGain(); o.type='triangle'; o.frequency.value=190;
+  env(og,t,.25,.09); o.connect(og); og.connect(master); o.start(t); o.stop(t+.12);
+}
+function hat(t,acc){
+  const n=noiseSrc(),f=ac.createBiquadFilter(),g=ac.createGain();
+  f.type='highpass'; f.frequency.value=7000;
+  env(g,t,acc?.16:.09,.045); n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t+.06);
+}
+function bassNote(t,midi,dur){
+  const o=ac.createOscillator(),f=ac.createBiquadFilter(),g=ac.createGain();
+  o.type='sawtooth'; o.frequency.value=midiHz(midi,440); f.type='lowpass'; f.frequency.value=650;
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.32,t+.01);
+  g.gain.setValueAtTime(.28,t+dur*.7); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t+dur+.02);
+}
+const chordVoice=(r,q)=>{const vs=voicings(r,q);return vs[0]||null;};
+function strumChord(t,dir,v,peak,len){
+  if(!v) return;
+  const order=dir>0?[0,1,2,3,4,5]:[5,4,3,2];
+  let k=0; order.forEach(i=>{if(v.frets[i]>=0){pluckAt(i,v.frets[i],t+k*(dir>0?.011:.008),peak,len);k++;}});
+}
+function btTick(){
+  try{
+    const st=STYLES[state.btStyle], P=curProg(); if(!P) return;
+    while(bt.next<ac.currentTime+.15){
+      const sd=60/state.bpm/2, s=bt.slot;
+      if(s<0){ if((s+8)%2===0) click(bt.next,(s+8)===0?2:1); bt.vis.push({t:bt.next,bar:-1,beat:(s+8)/2}); }
+      else{
+        const bar=Math.floor(s/8)%P.c.length, i=s%8, ch=P.c[bar];
+        const t=bt.next+(st.swing&&i%2===1?sd*.33:0);
+        if(st.K[i]==='x') kick(t);
+        if(st.S[i]==='x') snare(t);
+        if(st.H[i]==='x') hat(t,i%2===0);
+        const b=st.B[i];
+        if(b!==null&&b!==undefined){
+          const minor=['m','m7','dim'].includes(ch.q), iv=b===4&&minor?3:b===9&&minor?10:b;
+          const hold=st.B[(i+1)%8]===null?sd*1.8:sd*.92;
+          bassNote(t,36+mod(ch.r,12)+iv,hold);
+        }
+        const v=chordVoice(ch.r,st.power?'5':ch.q);
+        if(st.arp&&v){
+          const pl=[0,1,2,3,4,5].filter(x=>v.frets[x]>=0), si=pl[st.arp[i]%pl.length];
+          pluckAt(si,v.frets[si],t,.2,1.6);
+        }else if(st.G){
+          const g=st.G[i];
+          if(g==='D') strumChord(t,1,v,st.power?.14:.15,st.power?.35:1.4);
+          else if(g==='U') strumChord(t,-1,v,.09,1);
+          else if(g==='S') strumChord(t,1,v,.16,.22);
+        }
+        if(i%2===0) bt.vis.push({t:bt.next,bar,beat:i/2});
+      }
+      bt.next+=sd; bt.slot++;
+    }
+  }catch(e){}
+}
+function showBar(){
+  const P=curProg(), b=bt.on?bt.bar:-1, ch=P&&b>=0?P.c[b]:null;
+  document.querySelectorAll('#btChips .bchip').forEach(el=>el.classList.toggle('now',+el.dataset.i===b));
+  const now=$('#fsNow'); if(now) now.textContent=ch?chordName(ch.r,ch.q):(bt.on?'Hazır…':'');
+  const tones=ch?new Set(QBY[ch.q].iv.map(x=>(ch.r+x)%12)):null;
+  document.querySelectorAll('.fd').forEach(g=>{
+    const on=!!tones&&tones.has((OPEN[+g.dataset.s]+(+g.dataset.f))%12);
+    g.classList.toggle('ct',on);
+  });
+  document.querySelectorAll('#bcard .dwrap,.fs-board').forEach(w=>w.classList.toggle('playing',!!ch));
+}
+function btVis(){
+  if(!bt.on) return;
+  const now=ac.currentTime;
+  while(bt.vis.length&&bt.vis[0].t<=now){
+    const x=bt.vis.shift();
+    if(x.bar!==bt.bar){bt.bar=x.bar;showBar();}
+    const md=$('#mdot'); if(md){md.classList.add('on');md.classList.toggle('first',x.beat===0);setTimeout(()=>md.classList.remove('on'),90);}
+  }
+  requestAnimationFrame(btVis);
+}
+function btStart(){
+  ensureAudio(); if(!ac||!curProg()) return;
+  metroStop();
+  bt.on=true; bt.slot=-8; bt.vis=[]; bt.bar=-1; bt.next=ac.currentTime+.12;
+  bt.timer=setInterval(btTick,25); btTick();
+  requestAnimationFrame(btVis);
+  renderBT(); renderMbar(); renderFS();
+}
+function btStop(){
+  if(!bt.on) return;
+  bt.on=false; clearInterval(bt.timer); bt.vis=[]; bt.bar=-1;
+  renderBT(); renderMbar(); renderFS(); showBar();
+}
+function renderBT(){
+  const el=$('#btcard'), sc=SBY[state.sType], root=state.sRoot, progs=curProgs();
+  if(!progs.length){el.hidden=true;el.innerHTML='';return;}
+  el.hidden=false;
+  state.btProg=clamp(state.btProg,0,progs.length-1);
+  const P=progs[state.btProg], si=state.btStyle;
+  el.innerHTML=`<div class="bt-head"><div><b>Arka plan müziği</b><span><span id="btTempo">♩ ${state.bpm}</span> · ${nm(root)} ${keyWord(sc.parent)}</span></div>
+      <button class="btplay${bt.on?' on':''}" data-act="bt">${bt.on?ICON_STOP+'Durdur':ICON_PLAY+'Çal'}</button></div>
+    <div><span class="cap">İlerleme</span>${carousel('btprog',p=>{const x=progs[state.btProg+p];return x?x.n:'';},'mini')}</div>
+    <div class="srow btchips" id="btChips">${P.c.map((c,i)=>`<span class="bchip" data-i="${i}">${chordName(c.r,c.q)}</span>`).join('')}</div>
+    <div><span class="cap">Tarz</span>${carousel('btstyle',p=>{const x=STYLES[si+p];return x?x.n:'';},'mini')}</div>
+    <p class="hint">Çalarken o anki akor mavi yanar, notaları klavyede öne çıkar. Tempoyu alttaki şeritten değiştir.</p>`;
+  fixCars(); showBar(); if(bt.on) renderMbar();
+}
+
+/* ---------- Şarkılar ---------- */
+const curSong=()=>state.songs.find(s=>s.id===state.songId)||null;
+function songChords(text){
+  const out=[];
+  text.replace(/\[([^\]]{1,12})\]/g,(m,c)=>{const p=parseTok(c.trim());if(p) out.push(p);return m;});
+  text.split('\n').forEach(line=>{
+    if(line.includes('[')) return;
+    const t=line.trim().split(/\s+/).filter(Boolean);
+    if(t.length&&t.every(x=>parseTok(x))) t.forEach(x=>out.push(parseTok(x)));
+  });
+  return out;
+}
+const shiftName=(c,sh)=>nm(c.r+sh)+esc(c.suf)+(c.b==null?'':'/'+nm(c.b+sh));
+function lyricsHTML(text,sh){
+  return text.split('\n').map(line=>{
+    if(!line.trim()) return '<div class="lgap"></div>';
+    if(line.includes('[')){
+      const parts=line.split(/\[([^\]]{0,12})\]/);
+      let h='<div class="lline">';
+      if(parts[0]) h+=`<span class="lseg"><span class="ch ph"></span><span class="tx">${esc(parts[0])}</span></span>`;
+      for(let i=1;i<parts.length;i+=2){
+        const c=parseTok((parts[i]||'').trim()), tx=parts[i+1]||'';
+        const ch=c?`<button class="ch" data-act="chord" data-root="${mod(c.r+sh,12)}" data-q="${c.q}">${shiftName(c,sh)}</button>`:`<span class="ch plain">${esc(parts[i])}</span>`;
+        h+=`<span class="lseg">${ch}<span class="tx">${tx?esc(tx):'&nbsp;'}</span></span>`;
+      }
+      return h+'</div>';
+    }
+    const toks=line.trim().split(/\s+/);
+    if(toks.every(t=>parseTok(t))) return '<div class="srow">'+toks.map(t=>{const c=parseTok(t);return `<button class="cchip" data-act="chord" data-root="${mod(c.r+sh,12)}" data-q="${c.q}">${shiftName(c,sh)}</button>`;}).join('')+'</div>';
+    return `<div class="lline">${esc(line)}</div>`;
+  }).join('');
+}
+function capoAdvice(chs){
+  const uniq=[...new Map(chs.map(c=>[c.r+'|'+c.q,c])).values()];
+  const score=k=>uniq.filter(c=>OPENKEYS.has(mod(c.r-k,12)+'|'+c.q)).length;
+  let best=0; for(let k=1;k<=7;k++) if(score(k)>score(best)) best=k;
+  return {best,score,total:uniq.length};
+}
+function songSummary(s){
+  const u=[...new Map(songChords(s.text).map(c=>[c.r+'|'+c.q,c])).values()].slice(0,6);
+  return u.length?u.map(c=>shiftName(c,s.tr)).join(' · '):'Akor yok';
+}
+const stepperHTML=(act,lab)=>`<span class="stepper"><button data-act="${act}" data-v="-1" aria-label="${lab} azalt">−</button><button data-act="${act}" data-v="1" aria-label="${lab} artır">+</button></span>`;
+function renderSongs(){
+  const el=$('#tab-sarki'), s=curSong();
+  if(!s){
+    const rows=state.songs.map(x=>`<button class="lrow" data-act="opensong" data-v="${esc(x.id)}"><span class="lt2"><b>${esc(x.title||'Adsız şarkı')}</b><small>${songSummary(x)}</small></span><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>`).join('');
+    el.innerHTML=`<header class="nav"><h1 class="lt">Şarkılar</h1><div class="navr"><button class="iconbtn" data-act="newsong" aria-label="Yeni şarkı"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>${GEAR}</div></header>`+
+      tip('sarki','Akoru sözün önüne köşeli parantezle yaz: [Am]Akşam iner. Sadece akorlardan oluşan satırlar da olur: Am F C G')+
+      (rows?`<div class="group">${rows}</div>`:`<div class="card"><p class="empty">Henüz şarkı yok. Sağ üstteki + ile ilkini ekle.</p></div>`);
+    return;
+  }
+  const back=`<button class="back" data-act="songs">${CHEV_L}Şarkılar</button>`;
+  if(state.editing){
+    el.innerHTML=`<div class="navbar">${back}<button class="link" data-act="donesong" style="font-weight:600">Bitti</button></div>
+      <div class="group"><input id="sTitle" class="tin" value="${esc(s.title)}" placeholder="Şarkı adı" autocomplete="off" aria-label="Şarkı adı"></div>
+      <div class="group"><textarea id="sText" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Sözler ve akorlar" placeholder="[Am]Akşam iner [F]sahile yavaş">${esc(s.text)}</textarea></div>
+      <p class="foot">Akoru sözün önüne köşeli parantezle yaz: [Am]Akşam iner. Sadece akorlardan oluşan satırlar ayrı düğmeler olarak görünür.</p>
+      <div class="group"><div class="row"><span>Tempo</span><span class="right"><output>♩ ${s.bpm}</output>${stepperHTML('sbpm','Tempoyu')}</span></div></div>
+      <button class="danger" data-act="delsong">Şarkıyı sil</button>`;
+    return;
+  }
+  const chs=songChords(s.text).map(c=>({r:mod(c.r+s.tr,12),q:c.q}));
+  const adv=capoAdvice(chs), sh=s.tr-s.capo;
+  const sugg=chs.length&&adv.best!==s.capo&&adv.score(adv.best)>adv.score(s.capo)?`<small>Öneri: ${adv.best?adv.best+'. perde':'kapo yok'} · ${adv.score(adv.best)}/${adv.total} açık akor</small>`:'';
+  el.innerHTML=`<div class="navbar">${back}<button class="link" data-act="editsong">Düzenle</button></div>
+    <h1 class="lt">${esc(s.title||'Adsız şarkı')}</h1>
+    <div class="group">
+      <div class="row"><span>Ton</span><span class="right"><output>${s.tr>0?'+'+s.tr:s.tr}</output>${stepperHTML('tr','Tonu')}</span></div>
+      <div class="row"><span class="lbl2">Kapo${sugg}</span><span class="right"><output>${s.capo?s.capo+'. perde':'Yok'}</output>${stepperHTML('capo','Kapoyu')}</span></div>
+      <div class="row"><span>Tempo</span><span class="right"><output>♩ ${s.bpm}</output><button class="link" data-act="usebpm">Metronoma aktar</button></span></div>
+      <div class="row"><span>Otomatik kaydır</span><span class="right"><output>Hız ${state.autoSp}</output>${stepperHTML('autosp','Hızı')}<button class="playbtn${state.auto?' on':''}" data-act="auto" aria-label="${state.auto?'Kaydırmayı durdur':'Kaydırmayı başlat'}">${state.auto?ICON_STOP:ICON_PLAY}</button></span></div>
+    </div>
+    <div class="group pad lyrics">${s.capo?`<span class="capotag">Kapo ${s.capo}. perde · şekiller gösteriliyor</span>`:''}${s.text.trim()?lyricsHTML(s.text,sh):'<p class="empty">Bu şarkı boş. Düzenle\'ye dokunup söz ve akor ekle.</p>'}</div>`;
+}
+const AUTOSP=[0,12,20,30,44,62];
+let autoRaf=null,autoLast=0,autoAcc=0;
+function autoStep(now){
+  if(!state.auto) return;
+  const dt=Math.min(.1,(now-autoLast)/1000); autoLast=now;
+  autoAcc+=AUTOSP[state.autoSp]*dt;
+  const d=Math.floor(autoAcc);
+  if(d>=1){window.scrollBy(0,d);autoAcc-=d;}
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2){autoStop();return;}
+  autoRaf=requestAnimationFrame(autoStep);
+}
+function autoStart(){state.auto=true;autoLast=performance.now();autoAcc=0;autoRaf=requestAnimationFrame(autoStep);renderSongs();}
+function autoStop(){if(!state.auto) return;state.auto=false;cancelAnimationFrame(autoRaf);if(state.tab==='sarki') renderSongs();}
+
+/* ---------- Alt sayfa ---------- */
+function renderSheet(){
+  const k=state.sheet; if(!k) return;
+  let title='',body='';
+  if(k==='metro'){title='Metronom';body=metroSheet();}
+  else if(k==='settings'){
+    title='Ayarlar';
+    const t=(id,lab,on)=>`<div class="row"><span id="ls-${id}">${lab}</span><button class="toggle" role="switch" aria-labelledby="ls-${id}" aria-checked="${on}" data-act="set" data-v="${id}"><i></i></button></div>`;
+    body=`<div class="group">${t('solfege','Do Re Mi yazımı',state.solfege)}${t('flat','Bemol (♭) kullan',state.flat)}${t('lefty','Solak modu',state.lefty)}${t('awake','Ekran açık kalsın',state.awake)}</div>
+      <p class="foot">Solak modunda akor şemaları ve klavye aynalanır. Ekran açık kalsın açıkken uygulama önündeyken telefon kararmaz.</p>
+      <p class="foot">Şarkıların ve ayarların sadece bu cihazda saklanır.</p>`;
+  }
+  else if(k==='chord'){
+    const c=state.sc, vs=voicings(c.r,c.q); c.vi=clamp(c.vi,0,Math.max(vs.length-1,0));
+    const v=vs[c.vi], Q=QBY[c.q], labs=shapeLabels(vs);
+    title=chordName(c.r,c.q);
+    const notes=Q.iv.map(i=>`<span class="note${i===0?' r':''}">${nm(c.r+i)}</span>`).join('');
+    body=`<div class="card"><div class="csub" style="text-align:center;margin:0">${nm(c.r)} ${Q.tr}</div><div class="cnotes" style="justify-content:center;margin:0">${notes}</div>`+
+      (v?strumBox(c.r,c.q,c.vi,diagram(v,c.r).svg)+`<div class="vnav"><button class="nb" data-act="svi" data-v="-1" aria-label="Önceki şekil" ${c.vi<=0?'disabled':''}>${CHEV_L}</button><div class="vlab"><strong>${labs[c.vi]}</strong><span>${c.vi+1} / ${vs.length} şekil</span></div><button class="nb" data-act="svi" data-v="1" aria-label="Sonraki şekil" ${c.vi>=vs.length-1?'disabled':''}>${CHEV_R}</button></div>`:'<p class="empty">Şema bulunamadı.</p>')+
+      `</div><button class="fsbtn" data-act="open" data-root="${c.r}" data-q="${c.q}">Akorlar'da aç</button>`;
+  }
+  else if(k==='confirm'){
+    const s=curSong(); title='Şarkıyı sil';
+    body=`<p class="ctext">“${esc(s?s.title:'')}” silinsin mi? Bu işlem geri alınamaz.</p><div class="mbtns"><button class="tapbtn" data-act="closesheet">Vazgeç</button><button class="gobtn on" data-act="delconfirm">Sil</button></div>`;
+  }
+  $('#sheetTitle').textContent=title;
+  $('#sheetBody').innerHTML=body;
+  fixCars();
+}
+function openSheet(k){
+  state.sheet=k; renderSheet();
+  const w=$('#sheet'); w.hidden=false;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{w.classList.add('open');fixCars();}));
+}
+function closeSheet(){
+  const w=$('#sheet'); w.classList.remove('open'); state.sheet=null;
+  setTimeout(()=>{if(!state.sheet){w.hidden=true;$('#sheetBody').innerHTML='';}},reduceMotion()?0:340);
+}
+
+/* ---------- Ekran açık kalsın ---------- */
+let wl=null;
+async function keepAwake(){
+  if(!state.awake||document.hidden||wl||!navigator.wakeLock) return;
+  try{wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null;});}catch(e){wl=null;}
+}
+function releaseAwake(){try{if(wl) wl.release();}catch(e){} wl=null;}
+document.addEventListener('pointerup',()=>{keepAwake();},{passive:true});
+
+/* ---------- Genel ---------- */
+function renderTabs(){
+  document.querySelectorAll('.tabbar [data-act="tab"]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.v===state.tab)));
+  TABS.forEach(t=>{$('#tab-'+t).hidden=state.tab!==t;});
+  setTimeout(fixCars,0);
+}
+function renderAll(){
+  renderTuner();renderCard();renderRecent();renderTon();renderSongs();renderMbar();renderTabs();
+  if(state.sheet) renderSheet();
+  if(state.fs) renderFS();
+}
+
+/* Kaydırıcı tanımları */
+const CARS={
+  root:{get:()=>state.root,set:v=>{state.root=v;state.vi=0;},n:12,wrap:true,render:()=>{renderCard();renderMbar();noteRecent();}},
+  q:{get:()=>QT.findIndex(x=>x.k===state.q),set:v=>{state.q=QT[v].k;state.vi=0;},n:QT.length,wrap:false,render:()=>{renderCard();renderMbar();noteRecent();}},
+  vi:{get:()=>state.vi,set:v=>{state.vi=v;},get n(){return voicings(state.root,state.q).length;},wrap:false,render:()=>renderCard()},
+  sroot:{get:()=>state.sRoot,set:v=>{state.sRoot=v;state.sPos=0;},n:12,wrap:true,render:()=>{renderTon();renderFS();}},
+  stype:{get:()=>SCALES.findIndex(x=>x.k===state.sType),set:v=>{state.sType=SCALES[v].k;state.sPos=0;},n:SCALES.length,wrap:false,render:()=>{renderTon();renderFS();}},
+  inst:{get:()=>INST.indexOf(curInst()),set:v=>{stopTone(false);state.inst=INST[v].k;state.tunI=0;},n:INST.length,wrap:false,render:()=>renderTuner()},
+  tun:{get:()=>curInst().tun.indexOf(curTun()),set:v=>{stopTone(false);state.tunI=v;},get n(){return curInst().tun.length;},wrap:false,render:()=>renderTuner()},
+  btprog:{get:()=>state.btProg,set:v=>{state.btProg=v;},get n(){return curProgs().length;},wrap:false,render:()=>{renderBT();renderMbar();}},
+  btstyle:{get:()=>state.btStyle,set:v=>{state.btStyle=v;},n:STYLES.length,wrap:false,render:()=>{renderBT();renderMbar();}},
+  pat:{get:()=>state.pat,set:v=>{state.pat=v;},get n(){return PATS[state.sig].length;},wrap:false,render:()=>{renderSheet();renderMbar();}}
+};
+function canStep(k,d){const c=CARS[k];if(!c) return false;const i=c.get()+d;return c.wrap||(i>=0&&i<c.n);}
+/* d kadar ilerle. Sürüklerken (dragOff verilir) animasyonu parmak yönetir. */
+function stepRoot(k,d,dragOff){
+  const c=CARS[k]; if(!c||!d||!canStep(k,d)) return false;
+  let i=c.get()+d; if(c.wrap) i=mod(i,c.n);
+  if(dragOff!==undefined){tweens[k]=null;carOff[k]=dragOff;}
+  c.set(i); c.render();
+  if(dragOff===undefined){carOff[k]=d;fixCars();settle(k,d);}
+  save(); return true;
+}
+let sw=null;
+document.addEventListener('pointerdown',e=>{
+  const c=e.target.closest&&e.target.closest('.car'); if(!c) return;
+  const k=c.dataset.k; tweens[k]=null;
+  sw={k,id:e.pointerId,x:e.clientX,x0:e.clientX,off:carOff[k]||0,t:performance.now(),v:0,p:e.target.closest('.ci')};
+  try{c.closest('.sheet,main').setPointerCapture(e.pointerId);}catch(_){}
+});
+document.addEventListener('pointermove',e=>{
+  if(!sw||e.pointerId!==sw.id) return;
+  const c=carEl(sw.k); if(!c||!c.clientWidth) return;
+  const R=rpOf(c), cw=c.clientWidth/R.div;
+  const now=performance.now(), dx=e.clientX-sw.x;
+  sw.v=dx/Math.max(8,now-sw.t); sw.t=now; sw.x=e.clientX;
+  sw.off+=dx/cw;
+  while(sw.off<=-.5&&canStep(sw.k,1)){sw.off+=1;stepRoot(sw.k,1,sw.off);}
+  while(sw.off>=.5&&canStep(sw.k,-1)){sw.off-=1;stepRoot(sw.k,-1,sw.off);}
+  if(sw.off<0&&!canStep(sw.k,1)) sw.off=Math.max(sw.off,-.22);
+  if(sw.off>0&&!canStep(sw.k,-1)) sw.off=Math.min(sw.off,.22);
+  carOff[sw.k]=sw.off; const cc=carEl(sw.k); if(cc) layoutCar(cc,sw.off);
+});
+function endSwipe(e){
+  if(!sw||e.pointerId!==sw.id) return;
+  const s=sw; sw=null;
+  if(Math.abs(e.clientX-s.x0)<6&&s.p&&+s.p.dataset.p!==0){stepRoot(s.k,+s.p.dataset.p);return;}
+  let off=s.off;
+  /* Kısa ama hızlı fiske de geçirir; parmak durduysa hız sayılmaz. */
+  const recent=performance.now()-s.t<90, dir=Math.sign(e.clientX-s.x0);
+  const fling=recent&&Math.abs(s.v)>.45&&Math.abs(off)>.06&&Math.sign(off)===Math.sign(s.v);
+  if(((off<=-.28&&dir<0)||(fling&&s.v<0))&&canStep(s.k,1)){off+=1;stepRoot(s.k,1,off);}
+  else if(((off>=.28&&dir>0)||(fling&&s.v>0))&&canStep(s.k,-1)){off-=1;stepRoot(s.k,-1,off);}
+  carOff[s.k]=off; settle(s.k,off);
+}
+document.addEventListener('pointerup',endSwipe);
+document.addEventListener('pointercancel',endSwipe);
+
+function setChord(r,q){state.root=r;state.q=q in QBY?q:'';state.vi=0;renderCard();renderRecent();renderMbar();noteRecent();}
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const a=el.dataset.act, v=el.dataset.v, s=curSong();
+  switch(a){
+    case 'tab':
+      if(v==='sarki'&&state.tab==='sarki'){state.songId=null;state.editing=false;}
+      if(v!=='akort') stopTone(false);
+      autoStop(); state.tab=v; if(v==='sarki') renderSongs(); renderTuner(); renderTabs(); window.scrollTo(0,0); break;
+    case 'settings': openSheet('settings'); break;
+    case 'closesheet': closeSheet(); break;
+    case 'set':
+      state[v]=!state[v];
+      if(v==='awake'){if(state.awake) keepAwake(); else releaseAwake();}
+      renderAll(); break;
+    case 'tip': state.tips[v]=true; renderAll(); break;
+    case 'rstep': stepRoot(el.dataset.k,+v); break;
+    case 'peg': togglePeg(+v); break;
+    case 'a4': {state.a4=clamp(state.a4+(+v),430,450);const i=state.toneI;stopTone(false);if(i>=0) startTone(i);renderTuner();break;}
+    case 'metro': if(bt.on) btStop(); else if(metro.on) metroStop(); else metroStart(); break;
+    case 'bt': if(bt.on) btStop(); else btStart(); break;
+    case 'btprog': state.btProg=+v; renderBT(); if(!bt.on) btStart(); else renderMbar(); window.scrollTo({top:0,behavior:reduceMotion()?'auto':'smooth'}); break;
+    case 'metroopen': openSheet('metro'); break;
+    case 'bpm': setBpm(state.bpm+(+v)); break;
+    case 'sig': state.sig=v; state.pat=0; renderSheet(); renderMbar(); break;
+    case 'tap': tapTempo(); break;
+    case 'patchord': state.patChord=!state.patChord; renderSheet(); renderMbar(); break;
+    case 'pick': setChord(+el.dataset.root,el.dataset.q); break;
+    case 'chord': state.sc={r:+el.dataset.root,q:el.dataset.q in QBY?el.dataset.q:'',vi:0}; openSheet('chord'); break;
+    case 'svi': if(state.sc){state.sc.vi+=+v;renderSheet();} break;
+    case 'open':
+      closeSheet(); stopTone(false); autoStop();
+      state.tab='akorlar'; setChord(+el.dataset.root,el.dataset.q); renderTabs(); window.scrollTo(0,0); break;
+    case 'spos': state.sPos=+v; renderTon(); renderFS(); break;
+    case 'slab': state.sLab=v; renderTon(); renderFS(); break;
+    case 'fs': openFS(); break;
+    case 'fsclose': closeFS(); break;
+    case 'fsflip': state.fsFlip=!state.fsFlip; renderFS(); break;
+    case 'songs': autoStop(); state.songId=null; state.editing=false; renderSongs(); window.scrollTo(0,0); break;
+    case 'opensong': state.songId=v; state.editing=false; renderSongs(); window.scrollTo(0,0); break;
+    case 'newsong': {
+      const id='s'+Date.now().toString(36);
+      state.songs.unshift({id,title:'Yeni şarkı',text:'',tr:0,capo:0,bpm:90});
+      state.songId=id; state.editing=true; renderSongs(); window.scrollTo(0,0);
+      setTimeout(()=>{const t=$('#sTitle');if(t){t.focus();t.select();}},50); break;
+    }
+    case 'editsong': autoStop(); state.editing=true; renderSongs(); break;
+    case 'donesong': state.editing=false; renderSongs(); break;
+    case 'delsong': openSheet('confirm'); break;
+    case 'delconfirm':
+      state.songs=state.songs.filter(x=>x.id!==state.songId); state.songId=null; state.editing=false;
+      closeSheet(); renderSongs(); break;
+    case 'tr': if(s){s.tr=clamp(s.tr+(+v),-11,11);renderSongs();} break;
+    case 'capo': if(s){s.capo=clamp(s.capo+(+v),0,9);renderSongs();} break;
+    case 'sbpm': if(s){s.bpm=clamp(s.bpm+(+v)*2,30,240);renderSongs();} break;
+    case 'usebpm': if(s){setBpm(s.bpm);} break;
+    case 'autosp': state.autoSp=clamp(state.autoSp+(+v),1,5); renderSongs(); break;
+    case 'auto': if(state.auto) autoStop(); else autoStart(); break;
+  }
+  save();
+});
+document.addEventListener('input',e=>{
+  const s=curSong();
+  if(e.target.id==='bpmRange'){setBpm(+e.target.value);save();}
+  else if(s&&e.target.id==='sTitle'){s.title=e.target.value.slice(0,200);save();}
+  else if(s&&e.target.id==='sText'){s.text=e.target.value.slice(0,20000);save();}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(state.fs) closeFS(); else if(state.sheet) closeSheet(); return;}
+  const g=e.target.closest&&e.target.closest('.peg');
+  if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();togglePeg(+g.dataset.v);}
+});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){metroStop();btStop();stopTone(true);autoStop();}
+  else keepAwake();
+});
+window.addEventListener('resize',fixCars);
+
+load();
+renderAll();
+fixCars();
+</script>
+
+</body>
+</html>
